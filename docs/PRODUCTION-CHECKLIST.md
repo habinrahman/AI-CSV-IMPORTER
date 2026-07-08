@@ -6,11 +6,11 @@ Status of every production concern, verified at Milestone 12. ✅ done · 📋 d
 ## Security
 
 - ✅ **Helmet** security headers on every response
-- ✅ **CORS**: exact-origin allowlist; verified the header is the *fixed* configured value,
+- ✅ **CORS**: exact-origin allowlist; verified the header is the _fixed_ configured value,
   never a reflection of the request origin
 - ✅ **Rate limiting** per IP (draft-7 headers), `trust proxy = 1` so real client IPs are used
   behind Railway's proxy; health endpoint exempt
-- ✅ **Upload hardening**: extension + MIME allowlist, 5 MB cap (client *and* server),
+- ✅ **Upload hardening**: extension + MIME allowlist, 5 MB cap (client _and_ server),
   UUID server-side filenames (client filename never touches the filesystem), TTL sweep of
   temp files, uploads deleted once consumed
 - ✅ **Input validation**: Zod on every body (parsed, typed, defaulted); env Zod-validated at
@@ -39,7 +39,7 @@ Status of every production concern, verified at Milestone 12. ✅ done · 📋 d
 - ✅ **compression** on JSON responses (large results shrink dramatically) with SSE explicitly
   exempted — compression would buffer the event stream
 - ✅ `keepAliveTimeout` 65 s > proxy idle timeout (prevents sporadic 502s behind load balancers)
-- ✅ Frontend: all routes statically prerendered; heaviest route 216 kB First Load JS;
+- ✅ Frontend: all routes statically prerendered; heaviest route ≈ 230 kB First Load JS;
   `next/font` optimization; table virtualization for large previews; `Toaster`/dialog code
   split by route
 - ✅ React Query caching (`staleTime: Infinity` for immutable results)
@@ -60,9 +60,9 @@ Status of every production concern, verified at Milestone 12. ✅ done · 📋 d
   snapshot; client falls back to polling automatically)
 - ✅ **Cancellation**: `DELETE /api/imports/:id` + a confirmed Cancel button on the progress
   page; aborts in-flight provider calls, exactly one terminal event
-- ✅ Graceful shutdown: SIGTERM aborts jobs *first* (terminal SSE events flush, streams end),
+- ✅ Graceful shutdown: SIGTERM aborts jobs _first_ (terminal SSE events flush, streams end),
   then drains connections (`closeIdleConnections`) — no deadlock on live SSE clients
-- ✅ TTL sweep never silently deletes a *running* job: it cancels with a terminal event, then
+- ✅ TTL sweep never silently deletes a _running_ job: it cancels with a terminal event, then
   sweeps; terminal job state is immutable (no double terminal events)
 - ✅ Audit invariant checked on every job; `total = imported + skipped + failed`
 - ✅ Healthchecks: `/api/health` wired into docker-compose and `railway.toml`
@@ -77,9 +77,9 @@ Status of every production concern, verified at Milestone 12. ✅ done · 📋 d
 
 - ✅ Multi-stage Dockerfiles (backend: dev-dependency-free runtime via a `prod-deps` stage,
   non-root; frontend: Next standalone, non-root), compose with healthchecks + full env surface
-  *(Docker daemon not available in the final verification environment — re-run
-  `docker compose up --build` before first deploy)*
-- ✅ CI: lint → typecheck → 181 tests (144 backend + 37 frontend) → both builds → dependency audit
+  _(Docker daemon not available in the final verification environment — re-run
+  `docker compose up --build` before first deploy)_
+- ✅ CI: lint → typecheck → 185 tests (148 backend + 37 frontend) → both builds → dependency audit
 - ✅ `railway.toml` (Dockerfile build, healthcheck) · Vercel via `vercel-build` script
   (Root Directory = `frontend`)
 - ✅ Seed data: `samples/` (standard + hostile CSVs, load-test generator) · real screenshots
@@ -92,7 +92,7 @@ Status of every production concern, verified at Milestone 12. ✅ done · 📋 d
 
 ## Code quality
 
-- ✅ 144 backend unit/service tests (CSV engine, prompts, retry, batching, normalizers,
+- ✅ 148 backend unit/service tests (CSV engine, prompts, retry, batching, normalizers,
   pipeline, job store/service, repositories, golden-set integrity) — all green
 - ✅ Frontend test suite (Vitest + Testing Library) covering the upload, preview, progress,
   and results flows — 37 behavioral tests, including regression tests for the polling and duplicate-header bugs
