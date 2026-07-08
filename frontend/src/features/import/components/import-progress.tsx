@@ -23,17 +23,14 @@ const PHASE_LABELS: Record<ImportProgressData["phase"], string> = {
 };
 
 export function ImportProgress({ data }: { data: ImportProgressData }) {
-  const percent =
-    data.totalRows > 0 ? Math.round((data.processedRows / data.totalRows) * 100) : 0;
+  const percent = data.totalRows > 0 ? Math.round((data.processedRows / data.totalRows) * 100) : 0;
   const inFlight = data.phase !== "completed";
 
   return (
     <Card>
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-2 text-base">
-          {inFlight ? (
-            <Loader2 className="h-4 w-4 animate-spin text-primary" aria-hidden />
-          ) : null}
+          {inFlight ? <Loader2 className="h-4 w-4 animate-spin text-primary" aria-hidden /> : null}
           {/* role="status" announces PHASE changes to screen readers —
               phases change a handful of times, row counts change constantly;
               announcing the latter would be noise. */}

@@ -7,11 +7,7 @@ import type { ImportResult } from "@groweasy/shared";
 import { AIProviderError } from "../../utils/errors";
 import { BatchMapper } from "../ai/batch-mapper";
 import type { BatchMapping } from "../ai/mapping-schema";
-import type {
-  AIProvider,
-  MapBatchRequest,
-  MapBatchResult,
-} from "../ai/provider/ai-provider";
+import type { AIProvider, MapBatchRequest, MapBatchResult } from "../ai/provider/ai-provider";
 import { StreamingCsvParser } from "../csv/csv-parse.service";
 import { ImportPipeline, type PipelineProgress } from "./import-pipeline";
 
@@ -113,11 +109,11 @@ describe("ImportPipeline", () => {
     const file = writeCsv(
       [
         "name,email,phone,remark",
-        "Ravi Kumar, RAVI@X.COM ,98765 43210,interested",       // imported (normalized)
-        "Priya S,,919812345678,call back",                       // imported (bare 91 fixed)
-        "Walk In,,,visited stall",                               // pre-filter skip (0 tokens)
-        "Date Only,,2026-07-08,site visit planned",              // authoritative skip
-        "LowConf,low@x.co,,thinking",                            // imported + warning
+        "Ravi Kumar, RAVI@X.COM ,98765 43210,interested", // imported (normalized)
+        "Priya S,,919812345678,call back", // imported (bare 91 fixed)
+        "Walk In,,,visited stall", // pre-filter skip (0 tokens)
+        "Date Only,,2026-07-08,site visit planned", // authoritative skip
+        "LowConf,low@x.co,,thinking", // imported + warning
       ].join("\n"),
     );
 
@@ -150,9 +146,7 @@ describe("ImportPipeline", () => {
     expect(authSkip?.reason).toMatch(/after normalization/);
 
     // Warnings: discarded date-phone + low confidence.
-    expect(result.warnings.some((w) => /Discarded unparseable mobile/.test(w.message))).toBe(
-      true,
-    );
+    expect(result.warnings.some((w) => /Discarded unparseable mobile/.test(w.message))).toBe(true);
     expect(
       result.warnings.some((w) => w.rowIndex === 4 && /Low mapping confidence/.test(w.message)),
     ).toBe(true);
@@ -199,9 +193,7 @@ describe("ImportPipeline", () => {
   });
 
   it("flags malformed CSV rows as warnings while still processing them", async () => {
-    const file = writeCsv(
-      ["name,email,phone,remark", "Spilly,a@x.co,,note,EXTRA-CELL"].join("\n"),
-    );
+    const file = writeCsv(["name,email,phone,remark", "Spilly,a@x.co,,note,EXTRA-CELL"].join("\n"));
 
     const result = await makePipeline(new EchoProvider()).run(file);
 
@@ -211,10 +203,7 @@ describe("ImportPipeline", () => {
   });
 
   it("emits parsing then mapping progress with correct totals", async () => {
-    const rows = Array.from(
-      { length: 5 },
-      (_, i) => `Lead ${i},lead${i}@x.co,,note ${i}`,
-    );
+    const rows = Array.from({ length: 5 }, (_, i) => `Lead ${i},lead${i}@x.co,,note ${i}`);
     const file = writeCsv(["name,email,phone,remark", ...rows].join("\n"));
 
     const updates: PipelineProgress[] = [];

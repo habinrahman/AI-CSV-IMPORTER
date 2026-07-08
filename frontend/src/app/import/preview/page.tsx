@@ -20,10 +20,7 @@ import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { TableSkeleton } from "@/components/states/loading-state";
 import { FadeIn } from "@/components/motion/fade-in";
-import {
-  PREVIEW_ROW_LIMIT,
-  useCsvPreview,
-} from "@/features/import/hooks/use-csv-preview";
+import { PREVIEW_ROW_LIMIT, useCsvPreview } from "@/features/import/hooks/use-csv-preview";
 import { useImportFlow } from "@/features/import/import-flow-context";
 
 export default function PreviewPage() {
@@ -96,8 +93,8 @@ export default function PreviewPage() {
             <p className="flex items-center gap-2 text-sm text-muted-foreground">
               <AlertTriangle className="h-4 w-4 text-[#a97505] dark:text-[#fab219]" aria-hidden />
               {preview.problemRowCount.toLocaleString()} row
-              {preview.problemRowCount === 1 ? " has" : "s have"} an unusual shape (extra or
-              missing fields) — they will still be sent to the import.
+              {preview.problemRowCount === 1 ? " has" : "s have"} an unusual shape (extra or missing
+              fields) — they will still be sent to the import.
             </p>
           ) : null}
 
@@ -144,15 +141,13 @@ export default function PreviewPage() {
                   : preview.rows.length > 0
                     ? ` (${preview.rows.length.toLocaleString()} rows)`
                     : ""}
-                . Rows without an email or phone number are skipped automatically, and you
-                review everything before it reaches the CRM.
+                . Rows without an email or phone number are skipped automatically, and you review
+                everything before it reaches the CRM.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Not yet</AlertDialogCancel>
-              <AlertDialogAction onClick={handleStartImport}>
-                Start import
-              </AlertDialogAction>
+              <AlertDialogAction onClick={handleStartImport}>Start import</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

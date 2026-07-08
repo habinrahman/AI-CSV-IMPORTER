@@ -1,10 +1,5 @@
 import { eq } from "drizzle-orm";
-import type {
-  FailedRow,
-  ImportJobSnapshot,
-  ImportResult,
-  MappedLead,
-} from "@groweasy/shared";
+import type { FailedRow, ImportJobSnapshot, ImportResult, MappedLead } from "@groweasy/shared";
 import type { Db } from "../../db/client";
 import {
   crmRecords,

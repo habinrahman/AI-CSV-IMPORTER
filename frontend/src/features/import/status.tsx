@@ -35,8 +35,7 @@ const STATUS_STYLES: Record<CrmStatus, StatusStyle> = {
     label: "Follow up",
     icon: UserCheck,
     iconClass: "text-[#2a78d6] dark:text-[#3987e5]",
-    tintClass:
-      "bg-[#2a78d6]/10 border-[#2a78d6]/25 dark:bg-[#3987e5]/10 dark:border-[#3987e5]/25",
+    tintClass: "bg-[#2a78d6]/10 border-[#2a78d6]/25 dark:bg-[#3987e5]/10 dark:border-[#3987e5]/25",
   },
   DID_NOT_CONNECT: {
     label: "Did not connect",
@@ -65,10 +64,7 @@ export function StatusBadge({ status }: { status: CrmStatus | null }) {
   const style = STATUS_STYLES[status];
   const Icon = style.icon;
   return (
-    <Badge
-      variant="outline"
-      className={cn("gap-1 font-normal text-foreground", style.tintClass)}
-    >
+    <Badge variant="outline" className={cn("gap-1 font-normal text-foreground", style.tintClass)}>
       <Icon className={cn("h-3 w-3", style.iconClass)} aria-hidden />
       {style.label}
     </Badge>

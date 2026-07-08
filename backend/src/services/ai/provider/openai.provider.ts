@@ -5,11 +5,7 @@ import type { Logger } from "../../../logger";
 import type { PromptConfig, PromptModule } from "../../../prompts";
 import { AIProviderError } from "../../../utils/errors";
 import { parseJsonLeniently } from "../json-repair";
-import {
-  BatchMappingSchema,
-  BatchMappingWireSchema,
-  type BatchMapping,
-} from "../mapping-schema";
+import { BatchMappingSchema, BatchMappingWireSchema, type BatchMapping } from "../mapping-schema";
 import type { AIProvider, MapBatchRequest, MapBatchResult } from "./ai-provider";
 
 export interface OpenAIProviderOptions {
@@ -57,7 +53,10 @@ export class OpenAIProvider implements AIProvider {
     const messages: ChatCompletionMessageParam[] = [
       { role: "system", content: this.systemPrompt },
       { role: "system", content: this.developerPrompt },
-      { role: "user", content: this.prompts.user({ headers: request.headers, rows: request.rows }) },
+      {
+        role: "user",
+        content: this.prompts.user({ headers: request.headers, rows: request.rows }),
+      },
     ];
     if (request.repairHint) {
       messages.push({

@@ -82,7 +82,13 @@ async function main(): Promise<void> {
 
   GOLDEN_ROWS.forEach((golden, rowIndex) => {
     if (failedSet.has(rowIndex)) {
-      mismatches.push({ rowIndex, lesson: golden.lesson, field: "row", expected: "mapped", actual: "FAILED" });
+      mismatches.push({
+        rowIndex,
+        lesson: golden.lesson,
+        field: "row",
+        expected: "mapped",
+        actual: "FAILED",
+      });
       return;
     }
     const actualSkipped = skippedSet.has(rowIndex);
@@ -90,13 +96,25 @@ async function main(): Promise<void> {
       if (actualSkipped) skipTruePositive += 1;
       else {
         skipFalseNegative += 1;
-        mismatches.push({ rowIndex, lesson: golden.lesson, field: "skip", expected: "skipped", actual: "imported" });
+        mismatches.push({
+          rowIndex,
+          lesson: golden.lesson,
+          field: "skip",
+          expected: "skipped",
+          actual: "imported",
+        });
       }
       return;
     }
     if (actualSkipped) {
       skipFalsePositive += 1;
-      mismatches.push({ rowIndex, lesson: golden.lesson, field: "skip", expected: "imported", actual: "skipped" });
+      mismatches.push({
+        rowIndex,
+        lesson: golden.lesson,
+        field: "skip",
+        expected: "imported",
+        actual: "skipped",
+      });
       return;
     }
 
@@ -126,13 +144,16 @@ async function main(): Promise<void> {
         "",
       );
       const inDigits = golden.cells.map((c) => c.replace(/[^0-9]/g, ""));
-      if (!inDigits.some((d) => d.length >= 7 && (outDigits.endsWith(d) || d.endsWith(outDigits)))) {
+      if (
+        !inDigits.some((d) => d.length >= 7 && (outDigits.endsWith(d) || d.endsWith(outDigits)))
+      ) {
         traceabilityViolations += 1;
       }
     }
   });
 
-  const pct = (n: number, d: number): string => (d === 0 ? "n/a" : `${((n / d) * 100).toFixed(1)}%`);
+  const pct = (n: number, d: number): string =>
+    d === 0 ? "n/a" : `${((n / d) * 100).toFixed(1)}%`;
 
   const report = {
     model: env.OPENAI_MODEL,

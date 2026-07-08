@@ -16,12 +16,7 @@ import { AppError } from "../utils/errors";
  *
  * Must keep all four parameters for Express to register it as an error handler.
  */
-export function errorHandler(
-  err: unknown,
-  req: Request,
-  res: Response,
-  _next: NextFunction,
-): void {
+export function errorHandler(err: unknown, req: Request, res: Response, _next: NextFunction): void {
   const requestId = typeof req.id === "string" ? req.id : undefined;
 
   let statusCode = 500;

@@ -20,9 +20,7 @@ export interface ImportJobRecord {
 
 export type JobListener = (snapshot: ImportJobSnapshot) => void;
 
-export type JobUpdate = Partial<
-  Pick<ImportJobRecord, "status" | "progress" | "result" | "error">
->;
+export type JobUpdate = Partial<Pick<ImportJobRecord, "status" | "progress" | "result" | "error">>;
 
 /**
  * Job state seam. In-memory today; the interface is what the SSE hub and

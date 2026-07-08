@@ -15,10 +15,7 @@ const ALLOWED_MIME_TYPES = new Set([
   "application/octet-stream",
 ]);
 
-export function isAcceptableCsvUpload(file: {
-  originalname: string;
-  mimetype: string;
-}): boolean {
+export function isAcceptableCsvUpload(file: { originalname: string; mimetype: string }): boolean {
   const extension = path.extname(file.originalname).toLowerCase();
   return extension === ".csv" && ALLOWED_MIME_TYPES.has(file.mimetype);
 }

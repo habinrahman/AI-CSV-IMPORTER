@@ -39,16 +39,12 @@ describe("containsPhoneLike", () => {
 
 describe("hasContactSignal", () => {
   it("finds a signal in any cell", () => {
-    expect(
-      hasContactSignal({ name: "Ravi", note: "call 9876543210 after 6" }),
-    ).toBe(true);
+    expect(hasContactSignal({ name: "Ravi", note: "call 9876543210 after 6" })).toBe(true);
     expect(hasContactSignal({ a: "x", b: "r@x.co" })).toBe(true);
   });
 
   it("returns false when no cell could be an email or phone", () => {
-    expect(hasContactSignal({ name: "Walk-in", city: "Chennai", note: "no details" })).toBe(
-      false,
-    );
+    expect(hasContactSignal({ name: "Walk-in", city: "Chennai", note: "no details" })).toBe(false);
     expect(hasContactSignal({})).toBe(false);
   });
 });

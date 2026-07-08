@@ -45,8 +45,7 @@ export function createApp(container: Container): Express {
   // arrive only when the job ends.
   app.use(
     compression({
-      filter: (req, res) =>
-        req.path.endsWith("/events") ? false : compression.filter(req, res),
+      filter: (req, res) => (req.path.endsWith("/events") ? false : compression.filter(req, res)),
     }),
   );
   app.use(express.json({ limit: "1mb" }));

@@ -122,15 +122,7 @@ export const HEADER_BANK: HeaderCluster[] = [
   },
   {
     target: "data_source evidence (map to the source enum only when confident)",
-    headers: [
-      "Source",
-      "Lead Source",
-      "Campaign",
-      "Project",
-      "Property",
-      "Site",
-      "Channel",
-    ],
+    headers: ["Source", "Lead Source", "Campaign", "Project", "Property", "Site", "Channel"],
   },
   {
     target: "company",

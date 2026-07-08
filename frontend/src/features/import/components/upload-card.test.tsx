@@ -46,9 +46,7 @@ describe("UploadCard", () => {
     dropFile(container, oversizedCsv());
 
     const alert = await screen.findByRole("alert");
-    expect(alert).toHaveTextContent(
-      `File is larger than the ${DEFAULT_MAX_UPLOAD_MB} MB limit.`,
-    );
+    expect(alert).toHaveTextContent(`File is larger than the ${DEFAULT_MAX_UPLOAD_MB} MB limit.`);
     // The selection is cleared, never forwarded.
     expect(onFileSelected).toHaveBeenCalledWith(null);
     expect(onFileSelected).not.toHaveBeenCalledWith(expect.any(File));

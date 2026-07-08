@@ -196,9 +196,7 @@ describe("ImportJobService", () => {
 
   it("memoizes the runner after the first successful creation", () => {
     const store = new InMemoryJobStore(60_000, logger);
-    const factory = vi.fn(
-      (): ImportRunner => ({ run: async () => RESULT }),
-    );
+    const factory = vi.fn((): ImportRunner => ({ run: async () => RESULT }));
     const service = new ImportJobService(fakeFiles(), store, factory, NOOP, OPTIONS, logger);
 
     service.start("f-1");

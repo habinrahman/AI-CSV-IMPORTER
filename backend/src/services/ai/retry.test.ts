@@ -45,10 +45,7 @@ describe("withRetry", () => {
 
   it("caps the backoff at maxDelayMs", async () => {
     const delays: number[] = [];
-    const fn = vi
-      .fn()
-      .mockRejectedValueOnce(new Error("t"))
-      .mockResolvedValue("ok");
+    const fn = vi.fn().mockRejectedValueOnce(new Error("t")).mockResolvedValue("ok");
 
     const promise = withRetry(fn, {
       policy: { maxRetries: 1, baseDelayMs: 60_000, maxDelayMs: 5_000 },
@@ -63,9 +60,7 @@ describe("withRetry", () => {
 
   it("does not retry non-retryable errors", async () => {
     const fn = vi.fn().mockRejectedValue(new Error("permanent"));
-    await expect(withRetry(fn, { policy, isRetryable: () => false })).rejects.toThrow(
-      "permanent",
-    );
+    await expect(withRetry(fn, { policy, isRetryable: () => false })).rejects.toThrow("permanent");
     expect(fn).toHaveBeenCalledTimes(1);
   });
 
@@ -81,10 +76,7 @@ describe("withRetry", () => {
 
   it("treats a server Retry-After as a floor on the delay", async () => {
     const delays: number[] = [];
-    const fn = vi
-      .fn()
-      .mockRejectedValueOnce(new Error("rate"))
-      .mockResolvedValue("ok");
+    const fn = vi.fn().mockRejectedValueOnce(new Error("rate")).mockResolvedValue("ok");
 
     const promise = withRetry(fn, {
       policy,

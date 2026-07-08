@@ -50,8 +50,7 @@ export function useCsvPreview(file: File | null, maxRows = PREVIEW_ROW_LIMIT): C
       // Papa may run several header passes (delimiter auto-detection), so the
       // dedupe map must reset whenever a pass restarts at the first column.
       if (index === 0) seen.clear();
-      const stripped =
-        header.charCodeAt(0) === 0xfeff ? header.slice(1).trim() : header.trim();
+      const stripped = header.charCodeAt(0) === 0xfeff ? header.slice(1).trim() : header.trim();
       const base = stripped.length > 0 ? stripped : `column_${index + 1}`;
       const count = seen.get(base) ?? 0;
       seen.set(base, count + 1);

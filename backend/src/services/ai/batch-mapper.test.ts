@@ -3,12 +3,7 @@ import pino from "pino";
 import { AIProviderError } from "../../utils/errors";
 import { BatchMapper, type BatchProgress } from "./batch-mapper";
 import type { BatchMapping } from "./mapping-schema";
-import type {
-  AIProvider,
-  BatchRow,
-  MapBatchRequest,
-  MapBatchResult,
-} from "./provider/ai-provider";
+import type { AIProvider, BatchRow, MapBatchRequest, MapBatchResult } from "./provider/ai-provider";
 
 const logger = pino({ level: "silent" });
 
@@ -81,9 +76,7 @@ describe("BatchMapper", () => {
     expect(result.batches).toBe(3);
     expect(provider.requests.map((r) => r.rows.length)).toEqual([20, 20, 5]);
     expect(result.failures).toEqual([]);
-    expect(result.rows.map((r) => r.rowIndex)).toEqual(
-      Array.from({ length: 45 }, (_, i) => i),
-    );
+    expect(result.rows.map((r) => r.rowIndex)).toEqual(Array.from({ length: 45 }, (_, i) => i));
     // Token accounting: the fake reports 100/40 per call — 3 calls total.
     expect(result.tokens).toEqual({ prompt: 300, completion: 120 });
   });
@@ -188,9 +181,7 @@ describe("BatchMapper", () => {
 
     const result = await mapper.mapRows({ headers: [], rows: makeRows(10) });
 
-    expect(result.failures).toEqual([
-      { rowIndex: 7, message: "Model refused the request" },
-    ]);
+    expect(result.failures).toEqual([{ rowIndex: 7, message: "Model refused the request" }]);
     expect(result.rows.map((r) => r.rowIndex).sort((a, b) => a - b)).toEqual([
       0, 1, 2, 3, 4, 5, 6, 8, 9,
     ]);

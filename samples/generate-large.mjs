@@ -15,10 +15,54 @@ if (!Number.isInteger(count) || count <= 0) {
   process.exit(1);
 }
 
-const FIRST = ["Ravi", "Priya", "Amit", "Sunita", "John", "Fatima", "Deepak", "Anjali", "Vikram", "Rekha", "Meena", "Arjun"];
-const LAST = ["Kumar", "Sharma", "Patel", "Iyer", "Mathew", "Khan", "Rao", "Menon", "Singh", "Nair", "Reddy", "Verma"];
-const STATUS_PHRASES = ["interested - call back", "did not pick", "switched off", "not interested", "sale done", "wants site visit", "RNR", ""];
-const SOURCES = ["Leads on Demand", "Meridian Tower", "Eden Park", "Varah Swamy", "Sarjapur Plots", "", "", ""];
+const FIRST = [
+  "Ravi",
+  "Priya",
+  "Amit",
+  "Sunita",
+  "John",
+  "Fatima",
+  "Deepak",
+  "Anjali",
+  "Vikram",
+  "Rekha",
+  "Meena",
+  "Arjun",
+];
+const LAST = [
+  "Kumar",
+  "Sharma",
+  "Patel",
+  "Iyer",
+  "Mathew",
+  "Khan",
+  "Rao",
+  "Menon",
+  "Singh",
+  "Nair",
+  "Reddy",
+  "Verma",
+];
+const STATUS_PHRASES = [
+  "interested - call back",
+  "did not pick",
+  "switched off",
+  "not interested",
+  "sale done",
+  "wants site visit",
+  "RNR",
+  "",
+];
+const SOURCES = [
+  "Leads on Demand",
+  "Meridian Tower",
+  "Eden Park",
+  "Varah Swamy",
+  "Sarjapur Plots",
+  "",
+  "",
+  "",
+];
 
 const pick = (arr, i) => arr[i % arr.length];
 

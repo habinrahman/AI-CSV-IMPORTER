@@ -10,11 +10,7 @@ interface LoadingStateProps {
 /** Generic block-level loading placeholder. */
 export function LoadingState({ label = "Loading", className }: LoadingStateProps) {
   return (
-    <div
-      role="status"
-      aria-label={label}
-      className={cn("flex flex-col gap-3", className)}
-    >
+    <div role="status" aria-label={label} className={cn("flex flex-col gap-3", className)}>
       <Skeleton className="h-8 w-1/3" />
       <Skeleton className="h-4 w-2/3" />
       <Skeleton className="h-4 w-1/2" />

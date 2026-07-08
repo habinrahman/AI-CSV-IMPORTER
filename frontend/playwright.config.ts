@@ -45,9 +45,7 @@ export default defineConfig({
         PORT: "4000",
         CORS_ORIGIN: "http://localhost:3000",
         LOG_LEVEL: "warn",
-        ...(process.env["OPENAI_API_KEY"]
-          ? { OPENAI_API_KEY: process.env["OPENAI_API_KEY"] }
-          : {}),
+        ...(process.env["OPENAI_API_KEY"] ? { OPENAI_API_KEY: process.env["OPENAI_API_KEY"] } : {}),
       },
     },
     {

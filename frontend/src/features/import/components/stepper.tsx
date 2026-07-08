@@ -49,10 +49,7 @@ export function Stepper() {
               {index < IMPORT_STEPS.length - 1 ? (
                 <div
                   aria-hidden
-                  className={cn(
-                    "h-px flex-1",
-                    index < activeIndex ? "bg-primary" : "bg-border",
-                  )}
+                  className={cn("h-px flex-1", index < activeIndex ? "bg-primary" : "bg-border")}
                 />
               ) : null}
             </li>

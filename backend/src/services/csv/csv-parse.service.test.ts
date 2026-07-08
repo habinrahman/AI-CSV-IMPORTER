@@ -110,9 +110,7 @@ describe("StreamingCsvParser.stream", () => {
   });
 
   it("throws CsvParseError when the file does not exist", async () => {
-    await expect(collect(path.join(dir, "missing.csv"))).rejects.toBeInstanceOf(
-      CsvParseError,
-    );
+    await expect(collect(path.join(dir, "missing.csv"))).rejects.toBeInstanceOf(CsvParseError);
   });
 
   it("supports early termination without hanging (backpressure release)", async () => {

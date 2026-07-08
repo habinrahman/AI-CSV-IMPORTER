@@ -62,9 +62,9 @@ flowchart LR
 - **Separation of concerns** — the frontend renders and orchestrates UX; every business rule
   lives server-side. The API is a self-contained product usable by any client.
 - **Single source of truth** — the CRM Zod schema and all API DTOs live in `@groweasy/shared`;
-  frontend and backend import the *same* types, so they cannot drift.
+  frontend and backend import the _same_ types, so they cannot drift.
 - **Dependency inversion (SOLID)** — the import pipeline depends on the `AIProvider` and
-  `JobStore` *interfaces*, never on OpenAI or the in-memory store directly. Swapping either is a
+  `JobStore` _interfaces_, never on OpenAI or the in-memory store directly. Swapping either is a
   configuration change, not a refactor.
 - **Fail fast, degrade gracefully** — environment is Zod-validated at boot; at runtime a bad
   row or a failed batch degrades to a per-row error, never a crashed job.
@@ -86,14 +86,14 @@ once in `@groweasy/shared` and enforced by both the AI prompt and post-hoc Zod v
 
 ### 2.1 Target CRM schema
 
-| Field | Type | Rule |
-| --- | --- | --- |
-| `name` | `string` | Lead's full name, whitespace-normalized. |
-| `email` | `string` | Primary email, lowercased + trimmed. Additional emails → `crm_note`. |
-| `mobile` | `string` | Primary mobile in E.164 (`+<country><number>`). Additional numbers → `crm_note`. |
-| `status` | enum | **Only**: `GOOD_LEAD_FOLLOW_UP` · `DID_NOT_CONNECT` · `BAD_LEAD` · `SALE_DONE`. Inferred from row evidence (remarks/labels); never invented. |
+| Field         | Type         | Rule                                                                                                                                                  |
+| ------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`        | `string`     | Lead's full name, whitespace-normalized.                                                                                                              |
+| `email`       | `string`     | Primary email, lowercased + trimmed. Additional emails → `crm_note`.                                                                                  |
+| `mobile`      | `string`     | Primary mobile in E.164 (`+<country><number>`). Additional numbers → `crm_note`.                                                                      |
+| `status`      | enum         | **Only**: `GOOD_LEAD_FOLLOW_UP` · `DID_NOT_CONNECT` · `BAD_LEAD` · `SALE_DONE`. Inferred from row evidence (remarks/labels); never invented.          |
 | `data_source` | enum \| `""` | **Only**: `leads_on_demand` · `meridian_tower` · `eden_park` · `varah_swamy` · `sarjapur_plots`. Set **only when confident**; otherwise empty string. |
-| `crm_note` | `string` | Merged context — see 2.3. |
+| `crm_note`    | `string`     | Merged context — see 2.3.                                                                                                                             |
 
 ### 2.2 Skip rule
 
@@ -211,18 +211,18 @@ schemas are the implementation.
 
 Full endpoint reference with examples: **[docs/API.md](API.md)**.
 
-| Method & path | Purpose | Success response |
-| --- | --- | --- |
-| `POST /api/upload` (multipart `file`) | Store a CSV temporarily | `201 { fileId, filename, sizeBytes, uploadedAt, expiresAt }` |
-| `POST /api/parse` | Server-truth preview (headers, N rows, exact count) | `200 { headers, rows, totalRows }` |
-| `POST /api/imports` `{ fileId }` | Start the AI import job | `202 { jobId }` |
-| `GET /api/imports/:id` | Job snapshot (polling fallback) | `200 ImportJobSnapshot` |
-| `GET /api/imports/:id/events` | **SSE** live progress | event stream (below) |
-| `GET /api/imports/:id/result` | Final results (only when `status=completed`) | `200 { records, skipped, errors, warnings, stats }` |
-| `GET /api/health` | Liveness (never rate-limited) | `200 { status, service, version, timestamp }` |
+| Method & path                         | Purpose                                             | Success response                                             |
+| ------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------ |
+| `POST /api/upload` (multipart `file`) | Store a CSV temporarily                             | `201 { fileId, filename, sizeBytes, uploadedAt, expiresAt }` |
+| `POST /api/parse`                     | Server-truth preview (headers, N rows, exact count) | `200 { headers, rows, totalRows }`                           |
+| `POST /api/imports` `{ fileId }`      | Start the AI import job                             | `202 { jobId }`                                              |
+| `GET /api/imports/:id`                | Job snapshot (polling fallback)                     | `200 ImportJobSnapshot`                                      |
+| `GET /api/imports/:id/events`         | **SSE** live progress                               | event stream (below)                                         |
+| `GET /api/imports/:id/result`         | Final results (only when `status=completed`)        | `200 { records, skipped, errors, warnings, stats }`          |
+| `GET /api/health`                     | Liveness (never rate-limited)                       | `200 { status, service, version, timestamp }`                |
 
 Upload and import are deliberately separate: upload once, preview server-truth
-data, *then* commit AI spend against the same `fileId` — no re-upload, and the
+data, _then_ commit AI spend against the same `fileId` — no re-upload, and the
 confirm step is real.
 
 **Job lifecycle:** `queued → parsing → mapping → completed | failed`.
@@ -243,19 +243,19 @@ must never be confusable.
 
 ```ts
 interface ImportResult {
-  records:  MappedLead[];     // CrmLead + { rowIndex, confidence }
-  skipped:  SkippedRow[];     // { rowIndex, reason, raw } — business rule, correct behavior
-  errors:   FailedRow[];      // { rowIndex, message, raw } — post-retry/bisection failures
-  warnings: RowWarning[];     // { rowIndex, message } — imported but flagged for review
-  stats:    { totalRows, imported, skipped, failed, warnings, batches, durationMs };
+  records: MappedLead[]; // CrmLead + { rowIndex, confidence }
+  skipped: SkippedRow[]; // { rowIndex, reason, raw } — business rule, correct behavior
+  errors: FailedRow[]; // { rowIndex, message, raw } — post-retry/bisection failures
+  warnings: RowWarning[]; // { rowIndex, message } — imported but flagged for review
+  stats: { totalRows; imported; skipped; failed; warnings; batches; durationMs };
 }
 ```
 
 Design choices worth noting:
 
 - **`202 Accepted`**, not `200` — the import hasn't happened yet; the job has been accepted.
-- **Skipped ≠ failed.** Skipped rows are *correct* behavior (business rule); failed rows are
-  *errors* (exhausted retries). Auditors — and graders — can tell them apart.
+- **Skipped ≠ failed.** Skipped rows are _correct_ behavior (business rule); failed rows are
+  _errors_ (exhausted retries). Auditors — and graders — can tell them apart.
 - **`confidence` (0–1)** rides on each record so the UI can flag low-confidence mappings for
   human review before CRM insertion. It is metadata, not part of the CRM schema.
 
@@ -282,10 +282,10 @@ export interface AIProvider {
 }
 
 export interface MapBatchRequest {
-  headers: string[];                  // original CSV header row (may be empty)
-  rows: ReadonlyArray<RawCsvRow>;     // Record<string, string>, original values
-  startRowIndex: number;              // for stable row addressing in responses
-  signal?: AbortSignal;               // cancellation (job aborted / shutdown)
+  headers: string[]; // original CSV header row (may be empty)
+  rows: ReadonlyArray<RawCsvRow>; // Record<string, string>, original values
+  startRowIndex: number; // for stable row addressing in responses
+  signal?: AbortSignal; // cancellation (job aborted / shutdown)
 }
 ```
 
@@ -293,9 +293,12 @@ export interface MapBatchRequest {
 // services/ai/provider/factory.ts
 export function createAIProvider(env: Env, logger: Logger): AIProvider {
   switch (env.AI_PROVIDER) {
-    case "openai": return new OpenAIProvider(env, logger);
-    case "gemini": return new GeminiProvider(env, logger);   // future
-    case "claude": return new ClaudeProvider(env, logger);   // future
+    case "openai":
+      return new OpenAIProvider(env, logger);
+    case "gemini":
+      return new GeminiProvider(env, logger); // future
+    case "claude":
+      return new ClaudeProvider(env, logger); // future
   }
 }
 ```
@@ -333,7 +336,7 @@ content.
    the shared Zod schema, so malformed JSON is prevented at the decoding level where the
    provider supports it.
 2. **Never trust, always verify** — every response is parsed with the same Zod schema
-   (`BatchMappingSchema`). Structured outputs guarantee *shape*, not *sense*: a response can be
+   (`BatchMappingSchema`). Structured outputs guarantee _shape_, not _sense_: a response can be
    schema-valid yet wrong (row indices out of range, duplicated rows). Zod + invariant checks
    catch both.
 3. Validation failure is treated as a retryable model error (§8).
@@ -343,7 +346,7 @@ Per-row response envelope:
 ```ts
 const MappedRowSchema = z.object({
   rowIndex: z.number().int().nonnegative(),
-  lead: CrmLeadSchema.nullable(),      // null ⇒ model judged the row unmappable
+  lead: CrmLeadSchema.nullable(), // null ⇒ model judged the row unmappable
   skipReason: z.string().nullable(),
   confidence: z.number().min(0).max(1),
 });
@@ -353,7 +356,7 @@ const MappedRowSchema = z.object({
 
 The skip rule needs column semantics ("which column is email?") — which is the AI's job. So:
 
-- **Stage 1 — deterministic pre-filter (before AI):** regex scan of *all* cell values for
+- **Stage 1 — deterministic pre-filter (before AI):** regex scan of _all_ cell values for
   email-like and phone-like tokens. A row with no candidate anywhere can never satisfy the
   rule → skipped immediately, zero tokens spent. Conservative by design: when in doubt, send
   to the AI.
@@ -362,20 +365,20 @@ The skip rule needs column semantics ("which column is email?") — which is the
   regardless of what the model claimed.
 
 The deterministic stage saves money; the authoritative stage guarantees correctness even if the
-model errs. Business rules are ultimately enforced by *code*, not by prompt.
+model errs. Business rules are ultimately enforced by _code_, not by prompt.
 
 ### 6.5 Normalization (deterministic, not AI)
 
 Anything a pure function can do reliably is **not** delegated to the model — cheaper, faster,
 and testable:
 
-| Normalizer | Behavior |
-| --- | --- |
-| email | trim, lowercase, validate; extra emails → note |
-| mobile | strip formatting, resolve country code → E.164 (default region via `DEFAULT_PHONE_REGION`); extra numbers → note |
-| date | common formats → ISO 8601 (used inside notes) |
-| whitespace | collapse runs, trim all string fields |
-| note merge | assemble `crm_note` fragments in the stable §2.3 order |
+| Normalizer | Behavior                                                                                                         |
+| ---------- | ---------------------------------------------------------------------------------------------------------------- |
+| email      | trim, lowercase, validate; extra emails → note                                                                   |
+| mobile     | strip formatting, resolve country code → E.164 (default region via `DEFAULT_PHONE_REGION`); extra numbers → note |
+| date       | common formats → ISO 8601 (used inside notes)                                                                    |
+| whitespace | collapse runs, trim all string fields                                                                            |
+| note merge | assemble `crm_note` fragments in the stable §2.3 order                                                           |
 
 The AI decides **which** values are emails/phones/remarks (semantic mapping); the normalizers
 decide **how** they are canonicalized. Clean division of labor.
@@ -403,11 +406,11 @@ regardless of file size.
 
 **Classify first, retry second.** Every failure is classified before any retry decision:
 
-| Class | Examples | Action |
-| --- | --- | --- |
-| Retryable — transport | 429, 5xx, timeout, connection reset | exponential backoff + full jitter: `min(base·2ⁿ + rand, cap)`, honoring `Retry-After`; up to `MAX_RETRIES` (env, default 3) |
-| Retryable — model | Zod validation failure, row-index mismatch | re-request; final attempt appends the validation error to the prompt (self-repair) |
-| Non-retryable | 401/403, invalid request, schema rejected by provider | fail fast, surface clearly |
+| Class                 | Examples                                              | Action                                                                                                                      |
+| --------------------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Retryable — transport | 429, 5xx, timeout, connection reset                   | exponential backoff + full jitter: `min(base·2ⁿ + rand, cap)`, honoring `Retry-After`; up to `MAX_RETRIES` (env, default 3) |
+| Retryable — model     | Zod validation failure, row-index mismatch            | re-request; final attempt appends the validation error to the prompt (self-repair)                                          |
+| Non-retryable         | 401/403, invalid request, schema rejected by provider | fail fast, surface clearly                                                                                                  |
 
 **Batch bisection (last resort):** if a batch still fails after `MAX_RETRIES`, it is split in
 half and each half retried once. This isolates a single poison row (e.g., adversarial cell
@@ -545,41 +548,41 @@ flowchart TB
     BE -.-> S
 ```
 
-| Concern | Approach |
-| --- | --- |
-| Frontend | Vercel, native Next.js build; `NEXT_PUBLIC_API_URL` baked at build time |
-| Backend | Railway, multi-stage Docker image (build → pruned runtime); health check on `/api/health` |
-| Local full stack | `docker-compose up --build` (frontend :3000, backend :4000) |
-| Secrets | Platform env vars only; never in the repo; browser never sees any secret |
-| CORS | Exact-origin allowlist (`CORS_ORIGIN`) |
-| Hardening | Helmet, rate limiting, Multer size/MIME limits, sanitized error responses |
-| Shutdown | SIGTERM → stop accepting work → abort in-flight AI calls → close server |
+| Concern          | Approach                                                                                  |
+| ---------------- | ----------------------------------------------------------------------------------------- |
+| Frontend         | Vercel, native Next.js build; `NEXT_PUBLIC_API_URL` baked at build time                   |
+| Backend          | Railway, multi-stage Docker image (build → pruned runtime); health check on `/api/health` |
+| Local full stack | `docker-compose up --build` (frontend :3000, backend :4000)                               |
+| Secrets          | Platform env vars only; never in the repo; browser never sees any secret                  |
+| CORS             | Exact-origin allowlist (`CORS_ORIGIN`)                                                    |
+| Hardening        | Helmet, rate limiting, Multer size/MIME limits, sanitized error responses                 |
+| Shutdown         | SIGTERM → stop accepting work → abort in-flight AI calls → close server                   |
 
 ### Environment variables
 
-| Variable | Where | Default | Purpose |
-| --- | --- | --- | --- |
-| `PORT` | backend | `4000` | API port |
-| `CORS_ORIGIN` | backend | `http://localhost:3000` | Allowed browser origin |
-| `LOG_LEVEL` | backend | `info` | Pino level |
-| `AI_PROVIDER` | backend | `openai` | **Provider switch** (`openai` \| `gemini` \| `claude`) |
-| `OPENAI_API_KEY` | backend | — | Required when `AI_PROVIDER=openai` |
-| `OPENAI_MODEL` | backend | `gpt-4o-mini` | Model for the OpenAI adapter |
-| `PROMPT_VERSION` | backend | `v2` | Active prompt module |
-| `BATCH_SIZE` | backend | `20` | Rows per AI batch |
-| `AI_CONCURRENCY` | backend | `2` | Parallel in-flight batches |
-| `MAX_CONCURRENT_JOBS` | backend | `4` | Simultaneous import jobs; excess starts get `429` |
-| `MAX_RETRIES` | backend | `3` | Retry budget per batch |
-| `AI_TIMEOUT_MS` | backend | `60000` | Per-request provider timeout |
-| `MAX_FILE_SIZE_MB` | backend | `5` | Upload cap |
-| `UPLOAD_DIR` | backend | os tmpdir | Where uploads are staged |
-| `UPLOAD_TTL_MINUTES` | backend | `30` | Upload expiry (swept) |
-| `JOB_TTL_MINUTES` | backend | `60` | In-memory job retention; a job still running at TTL is cancelled (terminal event), then swept |
-| `DATABASE_URL` | backend | — | Optional Supabase Postgres (Drizzle). Durable jobs + CRM records; snapshot/result endpoints fall back to it after restarts |
-| `RATE_LIMIT_WINDOW_MS` | backend | `60000` | Rate-limit window |
-| `RATE_LIMIT_MAX` | backend | `100` | Requests per window per IP |
-| `DEFAULT_PHONE_REGION` | backend | `IN` | Country assumed for numbers without a code |
-| `NEXT_PUBLIC_API_URL` | frontend | `http://localhost:4000` | Backend base URL |
+| Variable               | Where    | Default                 | Purpose                                                                                                                    |
+| ---------------------- | -------- | ----------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `PORT`                 | backend  | `4000`                  | API port                                                                                                                   |
+| `CORS_ORIGIN`          | backend  | `http://localhost:3000` | Allowed browser origin                                                                                                     |
+| `LOG_LEVEL`            | backend  | `info`                  | Pino level                                                                                                                 |
+| `AI_PROVIDER`          | backend  | `openai`                | **Provider switch** (`openai` \| `gemini` \| `claude`)                                                                     |
+| `OPENAI_API_KEY`       | backend  | —                       | Required when `AI_PROVIDER=openai`                                                                                         |
+| `OPENAI_MODEL`         | backend  | `gpt-4o-mini`           | Model for the OpenAI adapter                                                                                               |
+| `PROMPT_VERSION`       | backend  | `v2`                    | Active prompt module                                                                                                       |
+| `BATCH_SIZE`           | backend  | `20`                    | Rows per AI batch                                                                                                          |
+| `AI_CONCURRENCY`       | backend  | `2`                     | Parallel in-flight batches                                                                                                 |
+| `MAX_CONCURRENT_JOBS`  | backend  | `4`                     | Simultaneous import jobs; excess starts get `429`                                                                          |
+| `MAX_RETRIES`          | backend  | `3`                     | Retry budget per batch                                                                                                     |
+| `AI_TIMEOUT_MS`        | backend  | `60000`                 | Per-request provider timeout                                                                                               |
+| `MAX_FILE_SIZE_MB`     | backend  | `5`                     | Upload cap                                                                                                                 |
+| `UPLOAD_DIR`           | backend  | os tmpdir               | Where uploads are staged                                                                                                   |
+| `UPLOAD_TTL_MINUTES`   | backend  | `30`                    | Upload expiry (swept)                                                                                                      |
+| `JOB_TTL_MINUTES`      | backend  | `60`                    | In-memory job retention; a job still running at TTL is cancelled (terminal event), then swept                              |
+| `DATABASE_URL`         | backend  | —                       | Optional Supabase Postgres (Drizzle). Durable jobs + CRM records; snapshot/result endpoints fall back to it after restarts |
+| `RATE_LIMIT_WINDOW_MS` | backend  | `60000`                 | Rate-limit window                                                                                                          |
+| `RATE_LIMIT_MAX`       | backend  | `100`                   | Requests per window per IP                                                                                                 |
+| `DEFAULT_PHONE_REGION` | backend  | `IN`                    | Country assumed for numbers without a code                                                                                 |
+| `NEXT_PUBLIC_API_URL`  | frontend | `http://localhost:4000` | Backend base URL                                                                                                           |
 
 Provider-conditional validation: `env.ts` requires the API key that matches `AI_PROVIDER`
 (e.g. `ANTHROPIC_API_KEY` when `claude`) and fails at boot otherwise.
@@ -591,12 +594,12 @@ Provider-conditional validation: `env.ts` requires the API key that matches `AI_
 Layered to match the architecture — every service is constructor-injected and therefore
 testable in isolation:
 
-| Layer | Tooling | What is tested |
-| --- | --- | --- |
-| Unit (highest ROI) | Vitest | normalizers (email/E.164/date/note-merge), skip pre-filter, retry classifier + backoff math, prompt builders (snapshot per version), Zod schemas |
-| Service | Vitest + `FakeAIProvider` | pipeline orchestration: batching, bisection, audit invariant (`total = imported+skipped+failed`), abort behavior |
-| HTTP | Vitest + supertest on `createApp()` | routes, upload guards, error mapping, SSE event framing |
-| E2E (smoke) | docker-compose + scripted run | fixture CSV → full run with mocked provider → result assertions |
+| Layer              | Tooling                             | What is tested                                                                                                                                   |
+| ------------------ | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Unit (highest ROI) | Vitest                              | normalizers (email/E.164/date/note-merge), skip pre-filter, retry classifier + backoff math, prompt builders (snapshot per version), Zod schemas |
+| Service            | Vitest + `FakeAIProvider`           | pipeline orchestration: batching, bisection, audit invariant (`total = imported+skipped+failed`), abort behavior                                 |
+| HTTP               | Vitest + supertest on `createApp()` | routes, upload guards, error mapping, SSE event framing                                                                                          |
+| E2E (smoke)        | docker-compose + scripted run       | fixture CSV → full run with mocked provider → result assertions                                                                                  |
 
 The `FakeAIProvider` implements `AIProvider` and is the direct payoff of the adapter pattern:
 the entire pipeline is tested deterministically, offline, for free.
@@ -608,15 +611,15 @@ the entire pipeline is tested deterministically, offline, for free.
 The interfaces are the seams; each upgrade below is a swap behind an existing interface, not a
 redesign:
 
-| Bottleneck | Today (assignment scope) | Upgrade path |
-| --- | --- | --- |
-| Job state | `InMemoryJobStore` | `RedisJobStore` behind the same `JobStore` interface → survives restarts, enables multi-instance |
-| Pipeline execution | in-process async | BullMQ workers (Redis) → horizontal scaling, per-queue rate limiting; API becomes a thin producer |
-| SSE fan-out | single instance | Redis pub/sub behind the SSE hub → any instance serves any job's events |
-| Upload storage | in-memory/tmp per request | S3/GCS presigned uploads → no file bytes through the API |
-| Results | in-memory with job | Postgres (import history, re-runs, audit trail) |
-| AI cost/quality | single provider | per-tenant provider/model/prompt-version config via the factory; A/B via `PROMPT_VERSION` |
-| Multi-tenancy | none | auth middleware + per-tenant rate limits & quotas |
+| Bottleneck         | Today (assignment scope)  | Upgrade path                                                                                      |
+| ------------------ | ------------------------- | ------------------------------------------------------------------------------------------------- |
+| Job state          | `InMemoryJobStore`        | `RedisJobStore` behind the same `JobStore` interface → survives restarts, enables multi-instance  |
+| Pipeline execution | in-process async          | BullMQ workers (Redis) → horizontal scaling, per-queue rate limiting; API becomes a thin producer |
+| SSE fan-out        | single instance           | Redis pub/sub behind the SSE hub → any instance serves any job's events                           |
+| Upload storage     | in-memory/tmp per request | S3/GCS presigned uploads → no file bytes through the API                                          |
+| Results            | in-memory with job        | Postgres (import history, re-runs, audit trail)                                                   |
+| AI cost/quality    | single provider           | per-tenant provider/model/prompt-version config via the factory; A/B via `PROMPT_VERSION`         |
+| Multi-tenancy      | none                      | auth middleware + per-tenant rate limits & quotas                                                 |
 
 Deliberately **not** built now: distributed job state and queue workers add operational surface
 that the assignment doesn't grade; the interfaces above keep the cost of adding them later at
@@ -626,18 +629,18 @@ that the assignment doesn't grade; the interfaces above keep the cost of adding 
 
 ## 14. Decision log
 
-| # | Decision | Alternatives considered | Rationale |
-| --- | --- | --- | --- |
-| 1 | Separate Express API + Next.js UI | Next.js route handlers | Long-running streaming + SSE workload; matches Vercel/Railway split |
-| 2 | npm workspaces (pnpm+Turbo deferred) | pnpm + Turborepo | Zero-tooling reviewer experience (`clone && npm install`); the pnpm/Turbo upgrade is mechanical and deferred until team/CI scale justifies it |
-| 3 | Async job + SSE | Blocking request; WebSockets | Survives slow AI runs; SSE is the minimal primitive for one-way progress |
-| 4 | `AIProvider` adapter + factory | Direct OpenAI SDK usage | Provider swap = config change; pipeline testable via fake; SOLID-DIP |
-| 5 | Structured outputs **and** Zod | Either alone | Schema constrains shape at generation; Zod guarantees it at runtime; neither alone is sufficient |
-| 6 | Versioned prompt modules | Inline strings | Reproducibility, A/B, rollback; prompts reviewed like code |
-| 7 | Deterministic normalizers post-AI | "Let the model format everything" | Pure functions are testable, free, and exact; model does semantics only |
-| 8 | Two-stage skip enforcement | Prompt-only enforcement | Business rules enforced by code; pre-filter also saves tokens |
-| 9 | Batch bisection on repeated failure | Fail whole batch | One poison row costs itself, not its neighbors |
-| 10 | In-memory JobStore behind interface | Redis now | Assignment scope; interface keeps the upgrade one adapter away |
+| #   | Decision                             | Alternatives considered           | Rationale                                                                                                                                     |
+| --- | ------------------------------------ | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Separate Express API + Next.js UI    | Next.js route handlers            | Long-running streaming + SSE workload; matches Vercel/Railway split                                                                           |
+| 2   | npm workspaces (pnpm+Turbo deferred) | pnpm + Turborepo                  | Zero-tooling reviewer experience (`clone && npm install`); the pnpm/Turbo upgrade is mechanical and deferred until team/CI scale justifies it |
+| 3   | Async job + SSE                      | Blocking request; WebSockets      | Survives slow AI runs; SSE is the minimal primitive for one-way progress                                                                      |
+| 4   | `AIProvider` adapter + factory       | Direct OpenAI SDK usage           | Provider swap = config change; pipeline testable via fake; SOLID-DIP                                                                          |
+| 5   | Structured outputs **and** Zod       | Either alone                      | Schema constrains shape at generation; Zod guarantees it at runtime; neither alone is sufficient                                              |
+| 6   | Versioned prompt modules             | Inline strings                    | Reproducibility, A/B, rollback; prompts reviewed like code                                                                                    |
+| 7   | Deterministic normalizers post-AI    | "Let the model format everything" | Pure functions are testable, free, and exact; model does semantics only                                                                       |
+| 8   | Two-stage skip enforcement           | Prompt-only enforcement           | Business rules enforced by code; pre-filter also saves tokens                                                                                 |
+| 9   | Batch bisection on repeated failure  | Fail whole batch                  | One poison row costs itself, not its neighbors                                                                                                |
+| 10  | In-memory JobStore behind interface  | Redis now                         | Assignment scope; interface keeps the upgrade one adapter away                                                                                |
 
 ---
 

@@ -13,9 +13,7 @@ import { expect, test } from "@playwright/test";
 
 const SAMPLES = path.resolve(__dirname, "..", "..", "samples");
 
-test("upload → preview → confirm → clear error when no AI key is configured", async ({
-  page,
-}) => {
+test("upload → preview → confirm → clear error when no AI key is configured", async ({ page }) => {
   test.skip(Boolean(process.env["OPENAI_API_KEY"]), "covered by the happy-path journey");
 
   await page.goto("/");
@@ -46,18 +44,14 @@ test("upload → preview → confirm → clear error when no AI key is configure
   await expect(page).toHaveURL(/\/import\/preview/);
 });
 
-test("full happy path: upload → preview → live progress → results → export", async ({
-  page,
-}) => {
+test("full happy path: upload → preview → live progress → results → export", async ({ page }) => {
   test.skip(
     !process.env["OPENAI_API_KEY"],
     "needs a real model — set OPENAI_API_KEY to run the full journey",
   );
 
   await page.goto("/import/upload");
-  await page
-    .locator('input[type="file"]')
-    .setInputFiles(path.join(SAMPLES, "leads-standard.csv"));
+  await page.locator('input[type="file"]').setInputFiles(path.join(SAMPLES, "leads-standard.csv"));
   await page.getByRole("button", { name: /upload & continue/i }).click();
 
   await expect(page).toHaveURL(/\/import\/preview/, { timeout: 15_000 });

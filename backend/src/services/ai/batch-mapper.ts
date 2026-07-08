@@ -145,8 +145,7 @@ export class BatchMapper {
         {
           policy: this.options.retryPolicy,
           isRetryable: (err) => err instanceof AIProviderError && err.retryable,
-          retryAfterMs: (err) =>
-            err instanceof AIProviderError ? err.retryAfterMs : undefined,
+          retryAfterMs: (err) => (err instanceof AIProviderError ? err.retryAfterMs : undefined),
           onRetry: (err, attempt, delayMs) => {
             this.logger.warn(
               { attempt, delayMs: Math.round(delayMs), rows: rows.length, err },
@@ -171,10 +170,7 @@ export class BatchMapper {
       }
 
       // One poison row must cost itself, not its whole batch.
-      this.logger.info(
-        { rows: rows.length, err: error },
-        "Batch failed after retries — bisecting",
-      );
+      this.logger.info({ rows: rows.length, err: error }, "Batch failed after retries — bisecting");
       const mid = Math.ceil(rows.length / 2);
       const left = await this.processBatch(rows.slice(0, mid), ctx, tokens);
       const right = await this.processBatch(rows.slice(mid), ctx, tokens);

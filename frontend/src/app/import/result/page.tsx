@@ -25,10 +25,7 @@ function textOrDash(value: string) {
   return value === "" ? <span className="text-muted-foreground">—</span> : value;
 }
 
-function textColumn(
-  id: keyof MappedLead & string,
-  header: string,
-): ColumnDef<MappedLead, unknown> {
+function textColumn(id: keyof MappedLead & string, header: string): ColumnDef<MappedLead, unknown> {
   return {
     id,
     header,
@@ -175,9 +172,7 @@ export default function ResultPage() {
         icon={FileUp}
         title="No completed import"
         description="Run an import first — results appear here when it finishes."
-        action={
-          <Button onClick={() => router.push("/import/upload")}>Go to upload</Button>
-        }
+        action={<Button onClick={() => router.push("/import/upload")}>Go to upload</Button>}
       />
     );
   }
@@ -198,9 +193,7 @@ export default function ResultPage() {
 
   if (result.isError) {
     const message =
-      result.error instanceof ApiError
-        ? result.error.message
-        : "Could not load the import result.";
+      result.error instanceof ApiError ? result.error.message : "Could not load the import result.";
     return (
       <ErrorState
         title="Could not load results"
@@ -275,11 +268,7 @@ export default function ResultPage() {
             New import
           </Link>
         </Button>
-        <Button
-          size="lg"
-          disabled={records.length === 0}
-          onClick={() => exportRecordsCsv(records)}
-        >
+        <Button size="lg" disabled={records.length === 0} onClick={() => exportRecordsCsv(records)}>
           <Download className="mr-1 h-4 w-4" aria-hidden />
           Export CSV
         </Button>

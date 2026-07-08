@@ -87,9 +87,7 @@ describe("few-shot examples", () => {
   it("every example output validates against the real response schema", () => {
     for (const example of EXAMPLES) {
       const parsed = MappedRowSchema.safeParse(example.expected);
-      expect(parsed.success, JSON.stringify(parsed.success ? {} : parsed.error.issues)).toBe(
-        true,
-      );
+      expect(parsed.success, JSON.stringify(parsed.success ? {} : parsed.error.issues)).toBe(true);
     }
   });
 

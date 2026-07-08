@@ -1,10 +1,4 @@
-import type {
-  FailedRow,
-  ImportResult,
-  MappedLead,
-  RowWarning,
-  SkippedRow,
-} from "@groweasy/shared";
+import type { FailedRow, ImportResult, MappedLead, RowWarning, SkippedRow } from "@groweasy/shared";
 import type { Logger } from "../../logger";
 import type { ParsedRow } from "../../types/csv";
 import type { BatchMapper } from "../ai/batch-mapper";
@@ -148,10 +142,7 @@ export class ImportPipeline {
 
       // Authoritative skip check: code overrules the model. A lead that
       // lost its last contact value during normalization cannot be imported.
-      if (
-        normalized.lead.email === "" &&
-        normalized.lead.mobile_without_country_code === ""
-      ) {
+      if (normalized.lead.email === "" && normalized.lead.mobile_without_country_code === "") {
         skipped.push({
           rowIndex: row.rowIndex,
           reason: "No valid email or mobile number after normalization",

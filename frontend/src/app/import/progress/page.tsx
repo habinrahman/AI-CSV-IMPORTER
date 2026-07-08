@@ -109,9 +109,7 @@ export default function ProgressPage() {
         icon={FileUp}
         title="No import running"
         description="Upload a CSV and start an import first."
-        action={
-          <Button onClick={() => router.push("/import/upload")}>Go to upload</Button>
-        }
+        action={<Button onClick={() => router.push("/import/upload")}>Go to upload</Button>}
       />
     );
   }
@@ -199,9 +197,8 @@ export default function ProgressPage() {
                 <AlertDialogHeader>
                   <AlertDialogTitle>Cancel this import?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Mapping stops immediately and nothing is written to the CRM.
-                    Rows processed so far are discarded — you can start over from
-                    the preview at any time.
+                    Mapping stops immediately and nothing is written to the CRM. Rows processed so
+                    far are discarded — you can start over from the preview at any time.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

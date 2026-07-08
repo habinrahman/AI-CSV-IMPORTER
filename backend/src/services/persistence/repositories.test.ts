@@ -95,7 +95,15 @@ describe("row mappers", () => {
 
   it("finalProgress derives a terminal progress from the stats", () => {
     const result = {
-      stats: { totalRows: 10, imported: 7, skipped: 2, failed: 1, warnings: 0, batches: 3, durationMs: 5 },
+      stats: {
+        totalRows: 10,
+        imported: 7,
+        skipped: 2,
+        failed: 1,
+        warnings: 0,
+        batches: 3,
+        durationMs: 5,
+      },
     } as ImportResult;
     expect(finalProgress(result)).toEqual({
       totalRows: 10,

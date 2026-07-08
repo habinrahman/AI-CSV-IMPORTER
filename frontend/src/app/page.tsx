@@ -55,8 +55,8 @@ export default function HomePage() {
         <FadeIn delay={0.1}>
           <p className="max-w-2xl text-lg text-muted-foreground">
             Drop a messy export from any source. GrowEasy Importer understands the columns
-            semantically, normalizes contacts, infers lead status, and gives you a
-            reviewable result — batched, retried, and fully audited.
+            semantically, normalizes contacts, infers lead status, and gives you a reviewable result
+            — batched, retried, and fully audited.
           </p>
         </FadeIn>
         <FadeIn delay={0.15} className="flex flex-col gap-3 sm:flex-row">

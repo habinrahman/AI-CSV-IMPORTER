@@ -27,5 +27,4 @@ export interface ParsedRow {
 
 /** Events emitted by the streaming parser, in order: one headers, then rows. */
 export type CsvStreamEvent =
-  | { type: "headers"; headers: string[] }
-  | { type: "row"; row: ParsedRow };
+  { type: "headers"; headers: string[] } | { type: "row"; row: ParsedRow };

@@ -169,12 +169,8 @@
           "name": "crm_records_job_id_import_jobs_id_fk",
           "tableFrom": "crm_records",
           "tableTo": "import_jobs",
-          "columnsFrom": [
-            "job_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["job_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -250,12 +246,8 @@
           "name": "failed_records_job_id_import_jobs_id_fk",
           "tableFrom": "failed_records",
           "tableTo": "import_jobs",
-          "columnsFrom": [
-            "job_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["job_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -351,23 +343,12 @@
     "public.crm_lead_status": {
       "name": "crm_lead_status",
       "schema": "public",
-      "values": [
-        "GOOD_LEAD_FOLLOW_UP",
-        "DID_NOT_CONNECT",
-        "BAD_LEAD",
-        "SALE_DONE"
-      ]
+      "values": ["GOOD_LEAD_FOLLOW_UP", "DID_NOT_CONNECT", "BAD_LEAD", "SALE_DONE"]
     },
     "public.import_job_status": {
       "name": "import_job_status",
       "schema": "public",
-      "values": [
-        "queued",
-        "parsing",
-        "mapping",
-        "completed",
-        "failed"
-      ]
+      "values": ["queued", "parsing", "mapping", "completed", "failed"]
     }
   },
   "schemas": {},

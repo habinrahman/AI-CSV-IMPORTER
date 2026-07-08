@@ -89,9 +89,7 @@ describe("v2 few-shot examples", () => {
     expect(V2_EXAMPLES).toHaveLength(7);
     for (const example of V2_EXAMPLES) {
       const parsed = MappedRowSchema.safeParse(example.expected);
-      expect(parsed.success, JSON.stringify(parsed.success ? {} : parsed.error.issues)).toBe(
-        true,
-      );
+      expect(parsed.success, JSON.stringify(parsed.success ? {} : parsed.error.issues)).toBe(true);
     }
   });
 

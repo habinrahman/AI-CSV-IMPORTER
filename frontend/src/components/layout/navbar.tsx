@@ -6,13 +6,7 @@ import { useState } from "react";
 import { Menu, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "./theme-toggle";
 
 const NAV_LINKS = [
@@ -45,9 +39,7 @@ export function Navbar() {
               aria-current={isActive(pathname, link.href) ? "page" : undefined}
               className={cn(
                 "rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
-                isActive(pathname, link.href)
-                  ? "text-foreground"
-                  : "text-muted-foreground",
+                isActive(pathname, link.href) ? "text-foreground" : "text-muted-foreground",
               )}
             >
               {link.label}
