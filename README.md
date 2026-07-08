@@ -17,8 +17,7 @@
 [![Docker](https://img.shields.io/badge/Docker-multi--stage-2496ED?logo=docker&logoColor=white)](docker-compose.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-<!-- After pushing to GitHub, add the live CI badge:
-[![CI](https://github.com/OWNER/REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/ci.yml) -->
+[![CI](https://github.com/habinrahman/AI-CSV-IMPORTER/actions/workflows/ci.yml/badge.svg)](https://github.com/habinrahman/AI-CSV-IMPORTER/actions/workflows/ci.yml)
 
 **Upload → Preview → Confirm → Live progress → Reviewable result → Export**
 
