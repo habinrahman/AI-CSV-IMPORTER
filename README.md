@@ -17,6 +17,9 @@
 [![Docker](https://img.shields.io/badge/Docker-multi--stage-2496ED?logo=docker&logoColor=white)](docker-compose.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+<!-- After pushing to GitHub, add the live CI badge:
+[![CI](https://github.com/OWNER/REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/ci.yml) -->
+
 **Upload → Preview → Confirm → Live progress → Reviewable result → Export**
 
 ![GrowEasy Importer home page](docs/screenshots/home.png)
@@ -80,7 +83,7 @@ Hardcoded mappings fail because the mapping space is unbounded: you cannot enume
 ### Frontend
 
 - **Four-step guided flow** with optimistic navigation, a confirm dialog before any AI spend, and toasts for every outcome.
-- **Virtualized, sortable, sticky-header tables** that survive 20k-row files.
+- **Virtualized, sortable, sticky-header tables** — a 1,000-row table renders ~20 DOM rows (proven by test), so result sets in the thousands stay smooth.
 - **Dark mode, reduced-motion support, keyboard-operable dropzone, skip links, ARIA-correct progress** — accessibility as a feature, not an afterthought.
 
 ### Developer experience & delivery
@@ -103,6 +106,17 @@ Hardcoded mappings fail because the mapping space is unbounded: you cannot enume
 ![Upload step](docs/screenshots/upload.png)
 
 Try it locally in under two minutes: [Development](#-development) → upload [`samples/leads-messy.csv`](samples/leads-messy.csv) and watch a hostile CSV (synonym headers, split names, a lying `Email` column, an injection attempt) turn into clean CRM records.
+
+### 🔍 Reviewing this codebase? Start here
+
+Six files that show the engineering fastest:
+
+1. [`backend/src/services/ai/batch-mapper.ts`](backend/src/services/ai/batch-mapper.ts) — the failure engineering: worker pool, retry orchestration, row-coverage invariant, batch **bisection**, token accounting
+2. [`backend/src/prompts/v2/developer.ts`](backend/src/prompts/v2/developer.ts) — the prompt itself: the PROFILE→ASSIGN→RESOLVE→EXTRACT procedure and the "values win" law
+3. [`backend/src/services/import/import-pipeline.ts`](backend/src/services/import/import-pipeline.ts) — the end-to-end run and the audit invariant
+4. [`backend/src/services/persistence/repositories.ts`](backend/src/services/persistence/repositories.ts) — repository pattern with executor-scoped transactions and idempotent writes
+5. [`frontend/src/features/import/hooks/use-import-progress.test.tsx`](frontend/src/features/import/hooks/use-import-progress.test.tsx) — how the frontend is tested: fake EventSource, schema-validated frames, a real regression test
+6. [`backend/src/eval/run-eval.ts`](backend/src/eval/run-eval.ts) — how the AI is measured, not trusted
 
 ---
 
@@ -238,23 +252,23 @@ Deeper dives: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) (full system design
 
 ## 🧰 Tech stack
 
-| Concern       | Choice                                                                                        | Version       |
-| ------------- | --------------------------------------------------------------------------------------------- | ------------- |
-| Language      | TypeScript, strict everywhere (`noUncheckedIndexedAccess`, …)                                 | 5.7           |
-| Frontend      | Next.js (App Router) + React                                                                  | 15.1 / 19     |
-| UI            | shadcn/ui + Radix primitives, TanStack Table + Virtual, React Dropzone, Framer Motion, sonner | —             |
-| Styling       | Tailwind CSS (class-strategy dark mode)                                                       | 3.4           |
-| Data fetching | TanStack React Query + native EventSource                                                     | 5.62          |
-| Backend       | Node.js + Express                                                                             | 4.21          |
-| AI            | OpenAI SDK — Chat Completions with Structured Outputs                                         | 4.77          |
-| Validation    | Zod (shared by both apps + the AI layer)                                                      | 3.25          |
-| Database      | Supabase (Postgres), optional                                                                 | —             |
-| ORM           | Drizzle ORM + drizzle-kit migrations, postgres-js driver                                      | 0.45          |
-| Phones        | libphonenumber-js (real dial-plan validation)                                                 | 1.13          |
-| CSV           | csv-parser (backend streaming) · PapaParse (browser preview/export)                           | —             |
-| Logging       | pino + pino-http (structured, request-correlated)                                             | 9             |
-| Testing       | Vitest + Testing Library + Playwright                                                         | 4 / 16 / 1.61 |
-| Delivery      | Docker (multi-stage, non-root) · docker-compose · Railway · Vercel · GitHub Actions           | —             |
+| Concern       | Choice                                                                                        | Version   |
+| ------------- | --------------------------------------------------------------------------------------------- | --------- |
+| Language      | TypeScript, strict everywhere (`noUncheckedIndexedAccess`, …)                                 | 5.7       |
+| Frontend      | Next.js (App Router) + React                                                                  | 15.1 / 19 |
+| UI            | shadcn/ui + Radix primitives, TanStack Table + Virtual, React Dropzone, Framer Motion, sonner | —         |
+| Styling       | Tailwind CSS (class-strategy dark mode)                                                       | 3.4       |
+| Data fetching | TanStack React Query + native EventSource                                                     | 5.62      |
+| Backend       | Node.js + Express                                                                             | 4.21      |
+| AI            | OpenAI SDK — Chat Completions with Structured Outputs                                         | 4.77      |
+| Validation    | Zod (shared by both apps + the AI layer)                                                      | 3.25      |
+| Database      | Supabase (Postgres), optional                                                                 | —         |
+| ORM           | Drizzle ORM + drizzle-kit migrations, postgres-js driver                                      | 0.45      |
+| Phones        | libphonenumber-js (real dial-plan validation)                                                 | 1.13      |
+| CSV           | csv-parser (backend streaming) · PapaParse (browser preview/export)                           | —         |
+| Logging       | pino + pino-http (structured, request-correlated)                                             | 9         |
+| Testing       | Vitest 4 · Testing Library 16 · Playwright 1.61                                               | —         |
+| Delivery      | Docker (multi-stage, non-root) · docker-compose · Railway · Vercel · GitHub Actions           | —         |
 
 ---
 
@@ -317,9 +331,55 @@ v1 said _what_ each field means; v2 additionally teaches _how to decide_ — whi
 
 The wire schema handed to OpenAI uses only the JSON-Schema subset strict mode supports everywhere (no `minimum`/`maximum`, no refinements) so schema derivation can never 400 a request. The **full** Zod schema — numeric bounds plus the `lead ⊕ skipReason` exclusivity invariant — re-validates every response at runtime. Schema-valid is still not enough: a **row-coverage check** asserts the model returned exactly the row indices it was asked about, no more, no fewer, no duplicates.
 
-### Self-repair, not blind retries
+### One of the seven few-shots, verbatim
 
-When a response fails validation, the retry doesn't re-ask the same question: the next attempt carries a **repair hint** describing exactly what was wrong ("Response violates the mapping schema (rows.0.confidence: too large)"). Transport failures (429/5xx) deliberately _don't_ generate hints — being rate-limited is not the model's fault.
+Examples are stored as **data** ([`examples.ts`](backend/src/prompts/v1/examples.ts)) and unit-tested against the real response schema — a schema-invalid example would teach the model the wrong format, so tests make that impossible. This one teaches synonym headers, a multi-email cell, the phone split, and status-from-evidence in a single row:
+
+```jsonc
+// input headers: ["Client", "Correo", "Mob No.", "Feedback"]
+// input row:     { "Client": "  anita  DSOUZA ",
+//                  "Correo": "Anita.D@example.com; anita.backup@mail.com",
+//                  "Mob No.": "98123 45678",
+//                  "Feedback": "very interested, wants site visit Saturday" }
+{
+  "rowIndex": 0,
+  "lead": {
+    "name": "Anita Dsouza",
+    "email": "anita.d@example.com",
+    "country_code": "+91",
+    "mobile_without_country_code": "9812345678",
+    "crm_status": "GOOD_LEAD_FOLLOW_UP",
+    "data_source": "",
+    "crm_note": "very interested, wants site visit Saturday. Additional email: anita.backup@mail.com",
+    // …best-effort fields (created_at, company, city, …) are "" — absent means empty, never invented
+  },
+  "skipReason": null,
+  "confidence": 0.93,
+}
+```
+
+The **confidence rubric** is explicit in the prompt: `1.0` unambiguous · `~0.9` minor judgment calls · `~0.85` a lying header was overruled on value evidence · `~0.7` meanings inferred mostly from values · `≤0.5` coin-flip — and anything below the configured threshold (0.6) surfaces as a review warning in the UI.
+
+### The failure ladder
+
+Every provider error is classified once ([`openai.provider.ts`](backend/src/services/ai/provider/openai.provider.ts)) and handled by tier ([`batch-mapper.ts`](backend/src/services/ai/batch-mapper.ts)):
+
+```mermaid
+flowchart TD
+    E[Provider call fails] --> C{Classify}
+    C -- "429 / 5xx / timeout / connection" --> R["Retry with full-jitter backoff<br/>honoring Retry-After"]
+    C -- "malformed JSON / schema violation /<br/>wrong row coverage" --> SR["Retry WITH a self-repair hint<br/>(the model is told exactly what was wrong)"]
+    C -- "refusal / token-limit truncation / 400" --> BI[No retry — deterministic for this payload]
+    C -- "401 / 403 / 404 (bad key, unknown model)" --> F[Abort the WHOLE job<br/>every batch would fail identically]
+    R -- budget exhausted --> BI
+    SR -- budget exhausted --> BI
+    BI --> B{Batch size?}
+    B -- "> 1 row" --> SPLIT[Bisect: split in half,<br/>process each half recursively]
+    SPLIT --> B
+    B -- "1 row" --> ROW[Single row fails —<br/>with reason + raw data.<br/>The other 19 rows import fine]
+```
+
+Transport failures (429/5xx) deliberately **don't** generate repair hints — being rate-limited is not the model's fault, and "please fix: Rate limited" teaches it nothing.
 
 ### Hallucination prevention
 
@@ -418,6 +478,7 @@ erDiagram
         text possession_time
         text description
         real confidence
+        timestamptz created_at "row insert time"
     }
     failed_records {
         uuid id PK
@@ -425,6 +486,7 @@ erDiagram
         int row_index
         text message
         jsonb raw "original cells - re-importable"
+        timestamptz created_at
     }
 ```
 
@@ -455,6 +517,9 @@ Base URL `http://localhost:4000` · JSON errors always: `{ "error": { "message",
 | `GET`    | `/api/imports/:id/events` | **SSE** live progress                                      | stream              |
 | `DELETE` | `/api/imports/:id`        | Cancel a running import (idempotent)                       | `200`               |
 | `GET`    | `/api/imports/:id/result` | Full outcome once completed (DB fallback after restart)    | `200`               |
+
+> [!NOTE]
+> The web UI previews **client-side** (PapaParse) for instant feedback without a round-trip; `POST /api/parse` is the server-side equivalent for API consumers, applying the same header-cleaning semantics (BOM strip, blank→`column_N`, duplicate dedup) — the API is a complete product without the UI.
 
 <details>
 <summary><strong>SSE contract + example payloads</strong></summary>
@@ -654,6 +719,7 @@ npm run dev                                # web :3000 · api :4000
 
 ```bash
 OPENAI_API_KEY=sk-... docker compose up --build
+# Windows / any shell: put OPENAI_API_KEY=sk-... in a root .env instead — compose reads it
 ```
 
 Multi-stage images (backend runtime contains **no dev dependencies** via a dedicated prod-deps stage; frontend ships Next.js standalone output), both running as non-root `node`, with healthchecks and full env pass-through.
@@ -671,7 +737,9 @@ Import the repo, set **Root Directory = `frontend`** (framework: Next.js). The `
 Create a project → copy the **transaction pooler** connection string (port 6543) → set `DATABASE_URL` → apply the schema once:
 
 ```bash
-npm run db:push --workspace backend
+npm run db:push --workspace backend        # direct schema push
+# or, migration-file workflow (SQL in backend/drizzle/):
+npm run db:generate --workspace backend && npm run db:migrate --workspace backend
 ```
 
 > [!IMPORTANT]
