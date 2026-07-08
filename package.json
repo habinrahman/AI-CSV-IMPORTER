@@ -1,0 +1,43 @@
+{
+  "name": "groweasy-importer",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI-powered CSV importer that maps arbitrary lead CSVs into the GrowEasy CRM schema.",
+  "engines": {
+    "node": ">=20"
+  },
+  "workspaces": [
+    "shared",
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace shared && npm run build --workspace backend && npm run build --workspace frontend",
+    "build:shared": "npm run build --workspace shared",
+    "dev": "npm run build:shared && concurrently -n shared,backend,frontend -c blue,green,magenta \"npm run dev --workspace shared\" \"npm run dev --workspace backend\" \"npm run dev --workspace frontend\"",
+    "dev:backend": "npm run build:shared && concurrently -n shared,backend -c blue,green \"npm run dev --workspace shared\" \"npm run dev --workspace backend\"",
+    "dev:frontend": "npm run dev --workspace frontend",
+    "start": "concurrently -n backend,frontend -c green,magenta \"npm run start --workspace backend\" \"npm run start --workspace frontend\"",
+    "lint": "npm run lint --workspaces --if-present",
+    "lint:fix": "npm run lint:fix --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "format": "prettier --write \"**/*.{ts,tsx,js,mjs,json,md,css}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,mjs,json,md,css}\"",
+    "clean": "npm run clean --workspaces --if-present"
+  },
+  "overrides": {
+    "postcss": "^8.5.10"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "concurrently": "^9.1.0",
+    "eslint": "^9.17.0",
+    "eslint-config-prettier": "^9.1.0",
+    "globals": "^15.14.0",
+    "prettier": "^3.4.2",
+    "prettier-plugin-tailwindcss": "^0.6.9",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.18.0"
+  }
+}

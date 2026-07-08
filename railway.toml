@@ -1,0 +1,15 @@
+# Railway deployment for the backend API.
+# Create a Railway service from this repo; this file tells it how to build
+# and when the container counts as healthy. Set the environment variables
+# from backend/.env.example in the Railway dashboard (at minimum:
+# OPENAI_API_KEY and CORS_ORIGIN=https://<your-vercel-domain>).
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "backend/Dockerfile"
+
+[deploy]
+healthcheckPath = "/api/health"
+healthcheckTimeout = 60
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
