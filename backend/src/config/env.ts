@@ -8,7 +8,13 @@ import { z } from "zod";
 const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   PORT: z.coerce.number().int().positive().default(4000),
-  CORS_ORIGIN: z.string().url().default("http://localhost:3000"),
+  // Browsers send Origin WITHOUT a trailing slash and CORS is an exact
+  // string match — normalize so "https://app.example.com/" still works.
+  CORS_ORIGIN: z
+    .string()
+    .url()
+    .transform((origin) => origin.replace(/\/+$/, ""))
+    .default("http://localhost:3000"),
   LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"]).default("info"),
 
   // Rate limiting.

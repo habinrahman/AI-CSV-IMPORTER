@@ -15,7 +15,9 @@ import {
  * from @groweasy/shared — this file only handles transport.
  */
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+// Trailing slashes in the env value would produce "//api/…" paths that miss
+// every Express route — normalize so sloppy platform config can't break us.
+const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000").replace(/\/+$/, "");
 
 /** A non-2xx response from the API, carrying the server's error envelope. */
 export class ApiError extends Error {
