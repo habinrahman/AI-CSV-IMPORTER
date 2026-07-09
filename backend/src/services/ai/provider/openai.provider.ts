@@ -175,6 +175,16 @@ export function classifyOpenAIError(error: unknown, provider: string): unknown {
   if (error instanceof OpenAI.APIError) {
     const status = error.status ?? 0;
     if (status === 429) {
+      // OpenAI reports an EMPTY BALANCE as 429 too — but unlike a rate
+      // limit, no amount of waiting fixes it. Abort the job with an
+      // actionable message instead of burning the retry budget per batch.
+      if (error.code === "insufficient_quota") {
+        return new AIProviderError(
+          "OpenAI quota exhausted — add credits to the account/project this API key belongs to",
+          provider,
+          { retryable: false, fatal: true },
+        );
+      }
       return new AIProviderError("Rate limited (429)", provider, {
         retryable: true,
         retryAfterMs: readRetryAfterMs(error.headers),

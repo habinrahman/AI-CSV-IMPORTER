@@ -63,10 +63,15 @@ function completionWith(overrides: Record<string, unknown>) {
 }
 
 /** Instances for classification tests without invoking SDK constructors. */
-function apiError(status: number, headers?: Record<string, string>): OpenAI.APIError {
+function apiError(
+  status: number,
+  headers?: Record<string, string>,
+  code?: string,
+): OpenAI.APIError {
   return Object.assign(Object.create(OpenAI.APIError.prototype), {
     status,
     headers,
+    code,
     message: `HTTP ${status}`,
   });
 }
@@ -124,6 +129,20 @@ describe("OpenAIProvider.mapBatch", () => {
     await expect(provider.mapBatch(request)).rejects.toMatchObject({
       retryable: true,
       retryAfterMs: 2000,
+    });
+  });
+
+  it("classifies an empty balance (429 insufficient_quota) as FATAL, not retryable", async () => {
+    // Waiting never refills a wallet — retrying would burn the whole retry
+    // budget per batch and then mislabel every row "Rate limited".
+    const { provider } = makeProvider(async () => {
+      throw apiError(429, undefined, "insufficient_quota");
+    });
+
+    await expect(provider.mapBatch(request)).rejects.toMatchObject({
+      retryable: false,
+      fatal: true,
+      message: expect.stringMatching(/quota exhausted.*add credits/i),
     });
   });
 
