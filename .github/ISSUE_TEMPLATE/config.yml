@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions & discussions
+    url: https://github.com/habinrahman/AI-CSV-IMPORTER/discussions
+    about: Ask design questions or share ideas before opening an issue
+  - name: Security vulnerability
+    url: https://github.com/habinrahman/AI-CSV-IMPORTER/blob/main/SECURITY.md
+    about: Report security issues privately — do not open a public issue

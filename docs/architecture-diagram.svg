@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 640" role="img" aria-labelledby="title desc">
+  <title id="title">GrowEasy Importer  System Architecture</title>
+  <desc id="desc">Browser connects to Next.js frontend and Express API. API streams CSV, calls OpenAI for semantic mapping, optionally persists to Supabase Postgres.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#134e4a"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#5eead4"/>
+    </marker>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="640" fill="url(#bg)" rx="16"/>
+  <text x="600" y="48" text-anchor="middle" fill="#f8fafc" font-family="Segoe UI, system-ui, sans-serif" font-size="28" font-weight="700">GrowEasy Importer  Architecture</text>
+  <text x="600" y="78" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, system-ui, sans-serif" font-size="15">Upload any CSV ’ AI semantic mapping ’ validated CRM records</text>
+
+  <!-- Browser -->
+  <g filter="url(#shadow)">
+    <rect x="60" y="250" width="170" height="100" rx="12" fill="url(#card)" stroke="#334155"/>
+    <text x="145" y="292" text-anchor="middle" fill="#e2e8f0" font-family="Segoe UI, system-ui, sans-serif" font-size="18" font-weight="600">Browser</text>
+    <text x="145" y="318" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, system-ui, sans-serif" font-size="13">Upload · Preview · SSE</text>
+  </g>
+
+  <!-- Frontend -->
+  <g filter="url(#shadow)">
+    <rect x="320" y="170" width="220" height="120" rx="12" fill="url(#card)" stroke="#38bdf8"/>
+    <text x="430" y="210" text-anchor="middle" fill="#7dd3fc" font-family="Segoe UI, system-ui, sans-serif" font-size="14" font-weight="600">Vercel</text>
+    <text x="430" y="238" text-anchor="middle" fill="#f8fafc" font-family="Segoe UI, system-ui, sans-serif" font-size="18" font-weight="600">Next.js 15</text>
+    <text x="430" y="264" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, system-ui, sans-serif" font-size="12">UI only · React Query · SSE</text>
+  </g>
+
+  <!-- Backend -->
+  <g filter="url(#shadow)">
+    <rect x="320" y="340" width="220" height="150" rx="12" fill="url(#card)" stroke="#2dd4bf"/>
+    <text x="430" y="378" text-anchor="middle" fill="#5eead4" font-family="Segoe UI, system-ui, sans-serif" font-size="14" font-weight="600">Railway</text>
+    <text x="430" y="406" text-anchor="middle" fill="#f8fafc" font-family="Segoe UI, system-ui, sans-serif" font-size="18" font-weight="600">Express API</text>
+    <text x="430" y="432" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, system-ui, sans-serif" font-size="12">Stream parse · Batch AI · Jobs</text>
+    <text x="430" y="454" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, system-ui, sans-serif" font-size="12">Retry · Bisect · Normalize</text>
+  </g>
+
+  <!-- Shared -->
+  <g filter="url(#shadow)">
+    <rect x="620" y="170" width="200" height="90" rx="12" fill="url(#card)" stroke="#a78bfa"/>
+    <text x="720" y="208" text-anchor="middle" fill="#c4b5fd" font-family="Segoe UI, system-ui, sans-serif" font-size="14" font-weight="600">@groweasy/shared</text>
+    <text x="720" y="234" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, system-ui, sans-serif" font-size="12">Zod schemas · API contracts</text>
+  </g>
+
+  <!-- OpenAI -->
+  <g filter="url(#shadow)">
+    <rect x="620" y="310" width="200" height="100" rx="12" fill="url(#card)" stroke="#f472b6"/>
+    <text x="720" y="350" text-anchor="middle" fill="#f9a8d4" font-family="Segoe UI, system-ui, sans-serif" font-size="14" font-weight="600">OpenAI</text>
+    <text x="720" y="376" text-anchor="middle" fill="#f8fafc" font-family="Segoe UI, system-ui, sans-serif" font-size="16" font-weight="600">Structured Outputs</text>
+    <text x="720" y="398" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, system-ui, sans-serif" font-size="12">Semantic field mapping</text>
+  </g>
+
+  <!-- Database -->
+  <g filter="url(#shadow)">
+    <rect x="620" y="460" width="200" height="100" rx="12" fill="url(#card)" stroke="#4ade80" stroke-dasharray="6 4"/>
+    <text x="720" y="500" text-anchor="middle" fill="#86efac" font-family="Segoe UI, system-ui, sans-serif" font-size="14" font-weight="600">Supabase Postgres</text>
+    <text x="720" y="526" text-anchor="middle" fill="#f8fafc" font-family="Segoe UI, system-ui, sans-serif" font-size="16" font-weight="600">Drizzle ORM</text>
+    <text x="720" y="548" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, system-ui, sans-serif" font-size="12">Optional · durable jobs</text>
+  </g>
+
+  <!-- Pipeline box -->
+  <g filter="url(#shadow)">
+    <rect x="880" y="250" width="260" height="200" rx="12" fill="url(#card)" stroke="#fbbf24"/>
+    <text x="1010" y="288" text-anchor="middle" fill="#fcd34d" font-family="Segoe UI, system-ui, sans-serif" font-size="14" font-weight="600">Import Pipeline</text>
+    <text x="1010" y="320" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, system-ui, sans-serif" font-size="13">1. Stream CSV parse</text>
+    <text x="1010" y="344" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, system-ui, sans-serif" font-size="13">2. Pre-filter (zero tokens)</text>
+    <text x="1010" y="368" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, system-ui, sans-serif" font-size="13">3. Batch AI + retry/bisect</text>
+    <text x="1010" y="392" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, system-ui, sans-serif" font-size="13">4. Zod validate + normalize</text>
+    <text x="1010" y="416" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, system-ui, sans-serif" font-size="13">5. SSE progress ’ result</text>
+  </g>
+
+  <!-- Arrows -->
+  <line x1="230" y1="285" x2="318" y2="230" stroke="#5eead4" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <line x1="230" y1="315" x2="318" y2="400" stroke="#5eead4" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <line x1="540" y1="230" x2="618" y2="215" stroke="#a78bfa" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="540" y1="400" x2="618" y2="360" stroke="#f472b6" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <line x1="540" y1="430" x2="878" y2="350" stroke="#fbbf24" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="720" y1="410" x2="720" y2="458" stroke="#4ade80" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#arrow)"/>
+  <text x="145" y="580" text-anchor="middle" fill="#64748b" font-family="Segoe UI, system-ui, sans-serif" font-size="12">REST + SSE</text>
+  <text x="430" y="580" text-anchor="middle" fill="#64748b" font-family="Segoe UI, system-ui, sans-serif" font-size="12">TypeScript monorepo · 186 tests · Docker ready</text>
+</svg>

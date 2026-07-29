@@ -1,0 +1,48 @@
+name: Feature request
+description: Suggest an enhancement or new capability
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe the problem you are trying to solve. Feature requests that align with the [roadmap](https://github.com/habinrahman/AI-CSV-IMPORTER#-future-roadmap) are especially welcome.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem statement
+      description: What pain point does this address?
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: How would you like this to work?
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Other approaches you evaluated.
+    validations:
+      required: false
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - AI / prompts
+        - Backend API
+        - Frontend UX
+        - Persistence / database
+        - DevOps / CI
+        - Documentation
+        - Other
+    validations:
+      required: true

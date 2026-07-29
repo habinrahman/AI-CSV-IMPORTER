@@ -32,7 +32,7 @@
 
 ## Table of contents
 
-[Why](#-why-this-project-exists) · [Features](#-features) · [Demo](#-demo) · [Architecture](#-architecture-overview) · [Folder structure](#-folder-structure) · [Tech stack](#-tech-stack) · [Core workflow](#-core-workflow) · [AI system](#-the-ai-system) · [CSV compatibility](#-csv-compatibility) · [Database](#-database) · [API](#-api-documentation) · [Frontend](#-frontend) · [Backend](#-backend) · [Testing](#-testing) · [AI evaluation](#-ai-evaluation) · [Security](#-security) · [Performance](#-performance) · [Deployment](#-deployment) · [Development](#-development) · [Env vars](#-environment-variables) · [Screenshots](#-screenshots) · [Sample CSVs](#-sample-csvs) · [Roadmap](#-future-roadmap) · [Decisions](#-engineering-decisions) · [Lessons](#-lessons-learned) · [Contributing](#-contributing) · [License](#-license)
+[Why](#-why-this-project-exists) · [Features](#-features) · [Demo](#-demo) · [Architecture](#-architecture-overview) · [Folder structure](#-folder-structure) · [Tech stack](#-tech-stack) · [Core workflow](#-core-workflow) · [AI system](#-the-ai-system) · [CSV compatibility](#-csv-compatibility) · [Database](#-database) · [API](#-api-documentation) · [Frontend](#-frontend) · [Backend](#-backend) · [Testing](#-testing) · [AI evaluation](#-ai-evaluation) · [Security](#-security) · [Performance](#-performance) · [Deployment](#-deployment) · [Development](#-development) · [Env vars](#-environment-variables) · [Screenshots](#-screenshots) · [Sample CSVs](#-sample-csvs) · [Roadmap](#-future-roadmap) · [FAQ](#-faq) · [Decisions](#-engineering-decisions) · [Lessons](#-lessons-learned) · [Contributing](#-contributing) · [License](#-license)
 
 ---
 
@@ -833,6 +833,59 @@ Exact counts can vary slightly run-to-run — that variability is precisely what
 
 ---
 
+## ❓ FAQ
+
+<details>
+<summary><strong>Do I need an OpenAI API key?</strong></summary>
+
+Only for the **import** step (AI field mapping). Upload and CSV preview work without a key. Without `OPENAI_API_KEY`, `POST /api/imports` returns `503` with a clear message.
+
+</details>
+
+<details>
+<summary><strong>Do I need a database?</strong></summary>
+
+No. Without `DATABASE_URL`, jobs and results live in memory until their TTL expires — ideal for local dev, CI, and demos. Set `DATABASE_URL` (Supabase transaction pooler recommended) when you want durable imports across restarts.
+
+</details>
+
+<details>
+<summary><strong>What CSV formats are supported?</strong></summary>
+
+Any UTF-8 CSV up to **5 MB** with comma delimiters. The importer handles synonym headers, split names, multi-value cells, junk placeholders, and headers that lie about their column type — see [CSV compatibility](#-csv-compatibility) and [`samples/`](samples/).
+
+</details>
+
+<details>
+<summary><strong>Can I use Gemini or Claude instead of OpenAI?</strong></summary>
+
+Not yet in production, but the `AIProvider` interface and `AI_PROVIDER` env var are ready. Adding another vendor is one adapter class — see the [roadmap](#-future-roadmap).
+
+</details>
+
+<details>
+<summary><strong>How do I roll back a bad prompt change?</strong></summary>
+
+Set `PROMPT_VERSION=v1` (or any shipped version) and restart the backend. Prompts are versioned as code; run `npm run eval --workspace backend` before promoting a new default.
+
+</details>
+
+<details>
+<summary><strong>Is my CSV data sent to OpenAI?</strong></summary>
+
+Yes — row batches (headers + cell values) are sent to your configured AI provider for mapping. Do not upload files containing secrets you cannot share with that provider. See [SECURITY.md](SECURITY.md) for reporting vulnerabilities.
+
+</details>
+
+<details>
+<summary><strong>How is this different from a rules-based CSV mapper?</strong></summary>
+
+Rules match spellings; this system matches **meaning**. A column named `Email` full of phone numbers is treated as a phone column because value shapes win over header names — the core capability hardcoded mappings cannot replicate at scale.
+
+</details>
+
+---
+
 ## 🗺 Future roadmap
 
 Deliberate deferrals, each with its seam already in place:
@@ -883,15 +936,7 @@ Honest notes from building this — the kind that only surface when you test aga
 
 ## 🤝 Contributing
 
-1. **Fork & branch** from `main` (`feat/…`, `fix/…`).
-2. **Install & run**: `npm install && npm run dev` (Node ≥ 20 — see `.nvmrc`). No API key needed unless you're touching the AI path.
-3. **Keep the invariants**:
-   - Types crossing the network live in `shared/` — never restate them.
-   - Business logic lives in services; controllers stay thin; nothing outside `services/ai/provider/` imports an AI SDK.
-   - Prompt changes are **copy-on-write**: shipped versions are immutable — create `prompts/v3/`, extend the `PROMPT_VERSION` enum, run the eval before making it the default.
-   - Schema changes ripple by design: update `shared/src/crm.ts`, then follow the compiler (wire schema → prompts → normalizers → DB schema + `db:generate` → frontend → golden set).
-4. **Gate before pushing**: `npm run lint && npm run typecheck && npm test && npm run build` (CI enforces all of it plus the audit and E2E).
-5. **PRs**: describe _why_, link the relevant doc section if behavior changes, and include tests — a bug fix without a regression test isn't done.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, architecture invariants, and PR guidelines. Security issues: [SECURITY.md](SECURITY.md). Community standards: [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md). Changes are tracked in [CHANGELOG.md](CHANGELOG.md).
 
 ---
 
