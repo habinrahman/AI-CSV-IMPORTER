@@ -24,7 +24,7 @@
     "test": "npm run test --workspaces --if-present",
     "format": "prettier --write \"**/*.{ts,tsx,js,mjs,json,md,css}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,mjs,json,md,css}\"",
-    "record:demo": "npm exec --workspace frontend -- node ../scripts/record-demo.mjs",
+    "record:demo": "npm run build && npm run record:demo --workspace frontend",
     "clean": "npm run clean --workspaces --if-present"
   },
   "overrides": {

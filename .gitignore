@@ -26,6 +26,8 @@ coverage/
 playwright-report/
 test-results/
 backend/eval-results.json
+docs/screenshots/.demo-recordings/
+docs/screenshots/.palette.png
 
 # TypeScript incremental
 *.tsbuildinfo

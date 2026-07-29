@@ -21,10 +21,11 @@
 
 **Upload → Preview → Confirm → Live progress → Reviewable result → Export**
 
+![GrowEasy Importer demo](docs/screenshots/demo.gif)
+
 ![GrowEasy Importer home page](docs/screenshots/home.png)
 
-<!-- PLACEHOLDER: demo.gif — record upload→result once deployed (e.g. with ScreenToGif), save to docs/screenshots/demo.gif -->
-<!-- PLACEHOLDER: hosted demo link — add after Railway + Vercel deploy -->
+<!-- Hosted demo: deploy with docs/DEPLOY.md — Railway (API) + Vercel (frontend) -->
 
 </div>
 
@@ -98,9 +99,9 @@ Hardcoded mappings fail because the mapping space is unbounded: you cannot enume
 
 |                        |                                                                                                     |
 | ---------------------- | --------------------------------------------------------------------------------------------------- |
-| **Hosted app**         | <!-- PLACEHOLDER: add Vercel URL after deploy --> _deploy pending — see [Deployment](#-deployment)_ |
-| **API**                | <!-- PLACEHOLDER: add Railway URL after deploy --> _deploy pending_                                 |
-| **60-second demo GIF** | <!-- PLACEHOLDER: docs/screenshots/demo.gif --> _record after first hosted import_                  |
+| **Hosted app**         | _Deploy with [docs/DEPLOY.md](docs/DEPLOY.md) — requires Vercel + Railway accounts_                 |
+| **API**                | _Set `NEXT_PUBLIC_API_URL` to your Railway domain after deploy_                                     |
+| **Demo GIF**           | [`docs/screenshots/demo.gif`](docs/screenshots/demo.gif) — re-record with `npm run record:demo`     |
 
 ![Upload step](docs/screenshots/upload.png)
 
@@ -143,6 +144,8 @@ flowchart LR
 ```
 
 Five principles run through everything:
+
+![System architecture diagram](docs/architecture-diagram.svg)
 
 1. **Separation of concerns** — the frontend renders and orchestrates UX; every business rule lives server-side. The API is a self-contained product.
 2. **Single source of truth** — the CRM Zod schema and all API DTOs live in [`@groweasy/shared`](shared/src). Both apps import the _same_ runtime schemas; drift is impossible.
@@ -814,8 +817,9 @@ Real captures from the running app (headless Edge, light theme), stored in [`doc
 | ----------- | -------------------------------------- |
 | Home        | ![Home](docs/screenshots/home.png)     |
 | Upload step | ![Upload](docs/screenshots/upload.png) |
+| Preview     | ![Preview](docs/screenshots/preview.png) |
 
-<!-- PLACEHOLDER: progress.png / result.png — capture during the first real-key import; the progress view is transient so a live run is required -->
+<!-- progress.png / result.png — capture with OPENAI_API_KEY set: npm run record:demo -->
 
 ---
 

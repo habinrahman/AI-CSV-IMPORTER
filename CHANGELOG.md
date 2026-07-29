@@ -7,26 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-07-29
+
 ### Added
 
 - Community health files: `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`
-- GitHub issue/PR templates and Dependabot configuration
-- FAQ section in README
+- GitHub issue/PR templates, Dependabot, and release workflow
+- FAQ section, architecture SVG diagram, and deployment guide (`docs/DEPLOY.md`)
+- Product demo GIF and refreshed screenshots (`npm run record:demo`)
+- Social preview image (`docs/social-preview.png`)
+- 17 GitHub topics for discoverability
 
-## [0.1.0] - 2026-07-10
+### Changed
 
-### Added
-
-- AI-powered CSV import pipeline with OpenAI Structured Outputs and Zod validation
-- Versioned prompts (`v1` baseline, `v2` active) with header bank and few-shot examples
-- Streaming CSV parse, batched AI calls with retry, bisection, and token accounting
-- Async import jobs with SSE progress and polling fallback
-- Optional Supabase Postgres persistence via Drizzle ORM
-- Next.js 15 frontend: upload → preview → progress → result flow
-- Golden-set AI evaluation harness (16 rows)
-- 185 unit/component tests + Playwright E2E journeys
-- Docker Compose, Railway, and Vercel deployment configs
-- GitHub Actions CI: lint, typecheck, test, build, audit, E2E
+- LICENSE copyright updated to Habin Abdul Rahman
+- Contributing section links to dedicated community files
 
 [Unreleased]: https://github.com/habinrahman/AI-CSV-IMPORTER/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/habinrahman/AI-CSV-IMPORTER/releases/tag/v0.1.0
