@@ -29,7 +29,7 @@
     "express-rate-limit": "^7.4.1",
     "helmet": "^8.0.0",
     "libphonenumber-js": "^1.13.8",
-    "multer": "^2.0.1",
+    "multer": "^2.3.0",
     "openai": "^4.77.0",
     "pino": "^9.6.0",
     "pino-http": "^10.3.0",
