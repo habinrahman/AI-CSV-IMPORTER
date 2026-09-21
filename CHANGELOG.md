@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Cross-import email deduplication: when `DATABASE_URL` is set, mapped leads whose
+  email already exists in `crm_records` are skipped with an auditable reason.
+  Within a single import, the first row for an email wins; later duplicates skip.
+  Phone-only leads (empty email) are unaffected.
+
 ## [0.1.0] - 2026-07-29
 
 ### Added
