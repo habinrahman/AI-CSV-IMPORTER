@@ -50,6 +50,10 @@ class FakePersistence implements ImportPersistence {
     return null;
   }
 
+  async findExistingEmails(_emails: string[]): Promise<Set<string>> {
+    return new Set();
+  }
+
   async dispose(): Promise<void> {}
 }
 

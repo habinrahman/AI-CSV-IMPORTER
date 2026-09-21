@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import type { FailedRow, ImportJobSnapshot, ImportResult, MappedLead } from "@groweasy/shared";
 import type { Db } from "../../db/client";
 import {
@@ -95,6 +95,11 @@ export class DrizzleImportJobsRepository implements ImportJobsRepository {
 export interface CrmRecordsRepository {
   /** Idempotent: replaces the job's records — a retry can never duplicate. */
   replaceForJob(jobId: string, records: MappedLead[]): Promise<void>;
+  /**
+   * Which of the given emails already exist in crm_records (any prior job).
+   * Empty input → empty set; uses the email index for the lookup.
+   */
+  findExistingEmails(emails: string[]): Promise<Set<string>>;
 }
 
 export class DrizzleCrmRecordsRepository implements CrmRecordsRepository {
@@ -105,6 +110,19 @@ export class DrizzleCrmRecordsRepository implements CrmRecordsRepository {
     for (const chunk of chunked(records.map(toRecordInsert(jobId)))) {
       await this.db.insert(crmRecords).values(chunk);
     }
+  }
+
+  async findExistingEmails(emails: string[]): Promise<Set<string>> {
+    if (emails.length === 0) return new Set();
+    const found = new Set<string>();
+    for (const chunk of chunked(emails)) {
+      const rows = await this.db
+        .selectDistinct({ email: crmRecords.email })
+        .from(crmRecords)
+        .where(inArray(crmRecords.email, chunk));
+      for (const row of rows) found.add(row.email);
+    }
+    return found;
   }
 }
 

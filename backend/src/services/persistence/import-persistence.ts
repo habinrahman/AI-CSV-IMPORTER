@@ -35,6 +35,11 @@ export interface ImportPersistence {
   loadSnapshot(jobId: string): Promise<ImportJobSnapshot | null>;
   /** Restart/TTL fallback for GET /api/imports/:id/result. */
   loadResult(jobId: string): Promise<ImportResult | null>;
+  /**
+   * Cross-import email dedup: which of these emails already exist in the CRM.
+   * No-op persistence returns an empty set (in-memory mode has no prior CRM).
+   */
+  findExistingEmails(emails: string[]): Promise<Set<string>>;
   /** Graceful shutdown (drain connection pools). */
   dispose(): Promise<void>;
 }
@@ -53,6 +58,10 @@ export class NoopImportPersistence implements ImportPersistence {
 
   async loadResult(): Promise<ImportResult | null> {
     return null;
+  }
+
+  async findExistingEmails(_emails: string[]): Promise<Set<string>> {
+    return new Set();
   }
 
   async dispose(): Promise<void> {}

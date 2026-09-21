@@ -22,12 +22,14 @@ export class DrizzleImportPersistence implements ImportPersistence {
 
   /** Non-transactional reads/mirrors run on the root connection. */
   private readonly jobs: DrizzleImportJobsRepository;
+  private readonly crm: DrizzleCrmRecordsRepository;
 
   constructor(
     private readonly conn: ReturnType<typeof createDb>,
     private readonly logger: Logger,
   ) {
     this.jobs = new DrizzleImportJobsRepository(conn.db);
+    this.crm = new DrizzleCrmRecordsRepository(conn.db);
   }
 
   mirrorStatus(jobId: string, mirror: JobStatusMirror): void {
@@ -56,6 +58,10 @@ export class DrizzleImportPersistence implements ImportPersistence {
 
   loadResult(jobId: string): Promise<ImportResult | null> {
     return this.jobs.findResult(jobId);
+  }
+
+  findExistingEmails(emails: string[]): Promise<Set<string>> {
+    return this.crm.findExistingEmails(emails);
   }
 
   async dispose(): Promise<void> {

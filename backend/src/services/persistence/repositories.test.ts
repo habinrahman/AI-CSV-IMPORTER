@@ -56,6 +56,14 @@ function stubExecutor() {
         return Promise.resolve();
       },
     }),
+    selectDistinct: () => ({
+      from: () => ({
+        where: () => {
+          calls.push("selectDistinct");
+          return Promise.resolve([{ email: "ravi@x.com" }]);
+        },
+      }),
+    }),
   };
   return { calls, executor: executor as unknown as DbExecutor };
 }
@@ -144,5 +152,24 @@ describe("replaceForJob repositories", () => {
 
     // Idempotency: a retry that now has zero failures must erase old ones.
     expect(calls).toEqual(["delete"]);
+  });
+});
+
+describe("findExistingEmails", () => {
+  it("returns an empty set without querying when given no emails", async () => {
+    const { calls, executor } = stubExecutor();
+    const found = await new DrizzleCrmRecordsRepository(executor).findExistingEmails([]);
+    expect(found.size).toBe(0);
+    expect(calls).toEqual([]);
+  });
+
+  it("queries distinct emails and returns the matches as a set", async () => {
+    const { calls, executor } = stubExecutor();
+    const found = await new DrizzleCrmRecordsRepository(executor).findExistingEmails([
+      "ravi@x.com",
+      "missing@x.com",
+    ]);
+    expect(calls).toEqual(["selectDistinct"]);
+    expect(found).toEqual(new Set(["ravi@x.com"]));
   });
 });

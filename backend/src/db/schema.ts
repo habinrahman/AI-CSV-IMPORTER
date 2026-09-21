@@ -99,8 +99,8 @@ export const crmRecords = pgTable(
     // Records are read (and idempotently replaced) by job — and Postgres
     // does not index FK columns automatically.
     index("crm_records_job_id_idx").on(table.jobId),
-    // "Does this lead already exist?" is the CRM's canonical lookup — the
-    // natural next feature (cross-import dedup) needs it on day one.
+    // "Does this lead already exist?" — cross-import email dedup queries this
+    // index before a record is accepted. Phone-only leads (empty email) skip it.
     // No status index on purpose: 4-value enum, planner would seq-scan anyway.
     index("crm_records_email_idx").on(table.email),
   ],
