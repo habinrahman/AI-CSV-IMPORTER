@@ -236,4 +236,53 @@ describe("ImportPipeline", () => {
       makePipeline(new EchoProvider()).run(file, { signal: controller.signal }),
     ).rejects.toHaveProperty("name", "AbortError");
   });
+
+  it("skips duplicate emails within the same import (first row wins)", async () => {
+    const file = writeCsv(
+      [
+        "name,email,phone,remark",
+        "First,a@x.com,,kept",
+        "Second,A@X.COM,,dup",
+        "Phone Only,,9876543210,no email",
+      ].join("\n"),
+    );
+
+    const result = await makePipeline(new EchoProvider()).run(file);
+
+    expect(result.stats).toMatchObject({ totalRows: 3, imported: 2, skipped: 1, failed: 0 });
+    expect(result.records.map((r) => r.rowIndex)).toEqual([0, 2]);
+    expect(result.skipped[0]).toMatchObject({
+      rowIndex: 1,
+      reason: "Duplicate email within this import (earlier row kept)",
+    });
+    expectAuditInvariant(result);
+  });
+
+  it("skips emails that already exist in the CRM via findExistingEmails", async () => {
+    const file = writeCsv(
+      [
+        "name,email,phone,remark",
+        "New,new@x.com,,ok",
+        "Old,old@x.com,,prior",
+      ].join("\n"),
+    );
+
+    const lookedUp: string[][] = [];
+    const result = await makePipeline(new EchoProvider()).run(file, {
+      findExistingEmails: async (emails) => {
+        lookedUp.push([...emails].sort());
+        return new Set(["old@x.com"]);
+      },
+    });
+
+    expect(lookedUp).toEqual([["new@x.com", "old@x.com"]]);
+    expect(result.stats).toMatchObject({ totalRows: 2, imported: 1, skipped: 1, failed: 0 });
+    expect(result.records[0]?.email).toBe("new@x.com");
+    expect(result.skipped[0]).toMatchObject({
+      rowIndex: 1,
+      reason: "Email already exists in CRM from a previous import",
+      raw: expect.objectContaining({ email: "old@x.com" }),
+    });
+    expectAuditInvariant(result);
+  });
 });

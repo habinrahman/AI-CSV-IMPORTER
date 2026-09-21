@@ -136,6 +136,7 @@ export class ImportJobService {
 
       const result = await runner.run(stored.path, {
         signal: job.abort.signal,
+        findExistingEmails: (emails) => this.persistence.findExistingEmails(emails),
         onProgress: (p) => {
           const progress: ImportJobProgress = {
             totalRows: p.totalRows,

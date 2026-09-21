@@ -5,6 +5,7 @@ import type { BatchMapper } from "../ai/batch-mapper";
 import type { CsvParser } from "../csv/csv-parse.service";
 import { hasContactSignal } from "../csv/row-heuristics";
 import { normalizeLead } from "../normalize/lead";
+import { decideEmailDedup, reasonForDedup } from "./email-dedup";
 
 export interface ImportPipelineOptions {
   defaultPhoneRegion: string;
@@ -25,6 +26,12 @@ export interface PipelineProgress {
 export interface PipelineHooks {
   signal?: AbortSignal;
   onProgress?: (progress: PipelineProgress) => void;
+  /**
+   * Cross-import email lookup. Given candidate emails (already normalized),
+   * return the subset that already exist in the CRM. Absent → no cross-import
+   * dedup (within-import duplicates are still collapsed).
+   */
+  findExistingEmails?: (emails: string[]) => Promise<ReadonlySet<string>>;
 }
 
 /**
@@ -124,7 +131,8 @@ export class ImportPipeline {
     }));
 
     // 4. Normalize + enforce the business rule on every mapped row.
-    const records: MappedLead[] = [];
+    // mappedCandidates hold the normalized lead + raw cells until email dedup runs.
+    const mappedCandidates: { lead: MappedLead; raw: Record<string, string> }[] = [];
     for (const row of mapResult.rows) {
       if (row.lead === null) {
         skipped.push({
@@ -158,7 +166,34 @@ export class ImportPipeline {
         });
       }
 
-      records.push({ ...normalized.lead, rowIndex: row.rowIndex, confidence: row.confidence });
+      mappedCandidates.push({
+        lead: { ...normalized.lead, rowIndex: row.rowIndex, confidence: row.confidence },
+        raw: rawOf(row.rowIndex),
+      });
+    }
+
+    // 5. Email dedup: cross-import (CRM) then within-import (first row wins).
+    const emails = [
+      ...new Set(mappedCandidates.map((c) => c.lead.email).filter((email) => email !== "")),
+    ];
+    const existingInCrm = hooks.findExistingEmails
+      ? await hooks.findExistingEmails(emails)
+      : new Set<string>();
+    hooks.signal?.throwIfAborted();
+
+    const records: MappedLead[] = [];
+    const seenInImport = new Set<string>();
+    for (const { lead, raw } of mappedCandidates) {
+      const decision = decideEmailDedup(lead.email, existingInCrm, seenInImport);
+      if (decision !== "keep") {
+        skipped.push({
+          rowIndex: lead.rowIndex,
+          reason: reasonForDedup(decision),
+          raw,
+        });
+        continue;
+      }
+      records.push(lead);
     }
 
     // Stable, source-order output regardless of batch completion order.
