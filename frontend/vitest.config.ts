@@ -16,5 +16,22 @@ export default defineConfig({
     globals: false,
     include: ["src/**/*.test.{ts,tsx}"],
     setupFiles: ["./src/test/setup.ts"],
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "text-summary", "lcov"],
+      reportsDirectory: "./coverage",
+      include: ["src/**/*.{ts,tsx}"],
+      exclude: [
+        "src/**/*.test.{ts,tsx}",
+        "src/test/**",
+        "src/components/ui/**",
+        "src/app/**/layout.tsx",
+        "src/app/**/page.tsx",
+        "src/app/global-error.tsx",
+        "src/app/error.tsx",
+        "src/app/not-found.tsx",
+        "src/app/providers.tsx",
+      ],
+    },
   },
 });
